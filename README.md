@@ -78,7 +78,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
     - ``cd oobe``
     - type in ``BypassNRO.cdm`` and press enter
 
-This will restart your PC and you should see the "I don't have internet" button once you get to the "Connect to a network screen" and you should be able to setup a local account like this
+    This will restart your PC and you should see the "I don't have internet" button once you get to the "Connect to a network screen" and you should be able to setup a local account like this
 
 * In order to recognize virtio disk when running installation, don't forget to load virtio driver from virtio-win.iso in the Windows installation.
   * <details>
