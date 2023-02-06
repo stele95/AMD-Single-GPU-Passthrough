@@ -95,45 +95,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
   
 * Add these to your XML for improved performance (not sure if this works for Intel). Check the [win11.xml](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/main/win11.xml) example file for proper placement of the each section.
   * <details>
-      <summary>XML Config, Ryzen 2600 2 x 3-core CCX CPU Pinning example</summary>
-	
-      ``` 
-                   L3                         L3
-	
-      |   Core#0 Core#1 Core#2  | |  Core#3 Core#4 Core#5   |
-      |    |0|     1      2     | |   |3|     4      5      |
-      |    |6|     7      8     | |   |9|     10     11     |
-      |      \                  | |     \                   |
-      |      Reserved for Host  | |      Reserved for Host  |
-      | __ __ __ __ __ __ __ __ | | __ __ __ __ __ __ __ __ |
- 
-      <vcpu placement='static' current='8'>12</vcpu>  <!-- I will use only 8 cores, rest will be disabled in VM and used for the HOST machine (emulatorpin) -->
-      <vcpus>
-        <vcpu id='0' enabled='yes' hotpluggable='no'/>
-        <vcpu id='1' enabled='yes' hotpluggable='yes'/>
-        <vcpu id='2' enabled='yes' hotpluggable='yes'/>
-        <vcpu id='3' enabled='yes' hotpluggable='yes'/>
-        <vcpu id='4' enabled='no' hotpluggable='yes'/>  <!-- Workaround to use both L3 caches, check the Coreinfo -->
-        <vcpu id='5' enabled='no' hotpluggable='yes'/>
-        <vcpu id='6' enabled='no' hotpluggable='yes'/>
-        <vcpu id='7' enabled='no' hotpluggable='yes'/>
-        <vcpu id='8' enabled='yes' hotpluggable='yes'/>
-        <vcpu id='9' enabled='yes' hotpluggable='yes'/>
-        <vcpu id='10' enabled='yes' hotpluggable='yes'/>
-        <vcpu id='11' enabled='yes' hotpluggable='yes'/>
-      </vcpus>
-      <cputune>
-        <vcpupin vcpu='0' cpuset='1'/>
-        <vcpupin vcpu='1' cpuset='7'/>
-        <vcpupin vcpu='2' cpuset='2'/>
-        <vcpupin vcpu='3' cpuset='8'/>
-        <vcpupin vcpu='8' cpuset='4'/>    <!-- Notice that after vCPU3, we defined vCPU8. We disabled 4,5,6,7 vCPUs -->
-        <vcpupin vcpu='9' cpuset='10'/>
-        <vcpupin vcpu='10' cpuset='5'/>
-        <vcpupin vcpu='11' cpuset='11'/>
-        <emulatorpin cpuset='0,3,6,9'/>   <!-- Threads reserved for host machine (in my case Core#0 and Core#3) -->
-      </cputune>
-      ```
+      <summary>XML Configs</summary>
 
       ```
       Enabling Hyper-V enlightenments (Windows only)
