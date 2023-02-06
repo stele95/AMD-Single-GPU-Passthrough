@@ -27,10 +27,10 @@ Preparing GRUB is very simple.
 1) Mark the script as executable:
     - AMD: ``chmod +x grub_setup_amd.sh`` 
     - Intel: ``chmod +x grub_setup_intel.sh``
-2) Then run the script and follow the instructions:
+2) Then run the script and follow instructions:
     - AMD: ``sudo ./grub_setup_amd.sh`` 
     - Intel: ``sudo ./grub_setup_intel.sh``
 
 ### Configuring Libvirt
 
-To configure libvirt run the script which configures libvirt and QEMU for you by typing ``sudo ./libvirt_configuration.sh``.
+To configure libvirt run the script which configures libvirt and QEMU by typing ``sudo ./libvirt_configuration.sh``.
