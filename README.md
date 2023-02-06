@@ -310,7 +310,7 @@ echo 0 > $PATH_TO_ROM
     ```
     
     
-## Logging
+### Logging
 
 * Check all hook logs with ```sudo cat /dev/kmsg | grep libvirt-qemu```
 
@@ -319,7 +319,7 @@ echo 0 > $PATH_TO_ROM
 * Check all qemu logs in ```/var/log/libvirt/qemu/``` directory 
     
 
-### Credits
+## Credits
 
 - BigAnteater for easy guide and scripts for setting up GRUB, libvirt and qemu: https://github.com/BigAnteater/KVM-GPU-Passthrough
 - RisingPrismTV for amazing hooks scripts: https://gitlab.com/risingprismtv/single-gpu-passthrough
