@@ -72,6 +72,12 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
       ![Screenshot from 2022-05-23 15-24-43](https://user-images.githubusercontent.com/32335484/169831867-c173ccae-de54-4bf4-bf7e-e1a29f855f33.png)
 
     </details>
+    
+* If installing Windows 11, remove network adapter from VM (NIC :xx:xx:xx) or disconnect your host OS before starting the installation because windows forces you to log in to microsoft account. Continue to installing. When the installation is finished and you get to the "Connect to a network screen" when setting up windows for the first time, do the following steps:
+    - press Shift + F10 to opet cmd
+    - cd oobe
+    - BypassNRO.cdm
+This will restart your PC and you should see the "I don't have internet" button once you get to the "Connect to a network screen" and you should be able to setup a local account like this
 
 * In order to recognize virtio disk when running installation, don't forget to load virtio driver from virtio-win.iso in the Windows installation.
   * <details>
@@ -86,14 +92,14 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 
     </details>
 
-* After the installation, boot into Windows and install all virtio drivers from the device manager. You can get drivers from virtio-win.iso. Just load all the drivers from virtio-win.iso through ```Add driver``` option in Device Manager
+* After the installation, boot into Windows and install all virtio drivers from the device manager. You can get drivers from virtio-win.iso. Just load all drivers from virtio-win.iso through ```Add driver``` option in Device Manager
 
 * Disable memballoon in your xml file:
   ```
   <memballoon model="none"/>
   ```
   
-* Add these to your XML for improved performance (not sure if this works for Intel). Check the [win11.xml](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/main/win11.xml) example file for proper placement of the each section.
+* Add these to your XML for improved performance (not sure if this works for Intel). Check the [win11.xml](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/main/win11.xml) example file for proper placement of each section.
   * <details>
       <summary>XML Configs</summary>
 
