@@ -23,8 +23,8 @@ echo "Adding $USERNAME to kvm and libvirt groups..."
 gpasswd -M $USERNAME kvm
 gpasswd -M $USERNAME libvirt
 sleep 2s
-mv libvirtd.conf /etc/libvirt
-echo "mv libvirtd.conf /etc/libvirt"
+cp libvirtd.conf /etc/libvirt
+echo "cp libvirtd.conf /etc/libvirt"
 sleep 1s
 echo "libvirt has been successfully configured!"
 echo "Time for your QEMU configs!"
@@ -32,8 +32,8 @@ sleep 2s
 echo "mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old"
 mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old
 sleep 1s
-echo "mv qemu.conf /etc/libvirt"
-mv qemu.conf /etc/libvirt
+echo "cp qemu.conf /etc/libvirt"
+cp qemu.conf /etc/libvirt
 sleep 1s
 systemctl restart libvirtd
 echo "QEMU has been successfully configured!"
