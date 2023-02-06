@@ -75,6 +75,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
     
 * If installing Windows 11, remove network adapter from VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows forces you to log in to microsoft account. Continue to installing. When the installation is finished and you get to the "Connect to a network screen" when setting up windows for the first time, do the following steps:
     - press Shift + F10 to opet cmd
+    - you might have to click on the cmd window if it doesn't get focused automatically
     - ``cd oobe``
     - type in ``BypassNRO.cmd`` and press enter
 
