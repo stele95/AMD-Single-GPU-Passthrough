@@ -323,4 +323,4 @@ echo 0 > $PATH_TO_ROM
 
 - BigAnteater for easy guide and scripts for setting up GRUB, libvirt and qemu: https://github.com/BigAnteater/KVM-GPU-Passthrough
 - RisingPrismTV for amazing hooks scripts: https://gitlab.com/risingprismtv/single-gpu-passthrough
-- Zile995 for detailed guide: https://github.com/Zile995/PinnacleRidge-Polaris-GPU-Passthrough
+- Zile995 for the really detailed guide: https://github.com/Zile995/PinnacleRidge-Polaris-GPU-Passthrough
