@@ -277,12 +277,39 @@ echo 0 > $PATH_TO_ROM
 
 ### Final checks
 
-You might need to start default network manually:
+* You might need to start default network manually:
   ```
   sudo virsh net-start default
   sudo virsh net-autostart default
   ```
+  
+* Don't forget to edit:
+  * /etc/libvirt/qemu.conf
+    ```
+    user = "yourusername"
+    group = "kvm"
+    ```
 
+* ```/etc/libvirt/libvirtd.conf``` should be set up like this:
+    ```
+    unix_sock_group = "libvirt"
+    unix_sock_ro_perms = "0777"
+    unix_sock_rw_perms = "0770"
+    auth_unix_ro = "none"
+    auth_unix_rw = "none"
+    log_filters = "2:libvirt.domain 1:qemu"
+    log_outputs = "1:file:/var/log/libvirt/libvirtd.log"
+    ```
+    
+    
+## Logging
+
+* Check all hook logs with ```sudo cat /dev/kmsg | grep libvirt-qemu```
+
+* Check all libvirt logs in ```/var/log/libvirt/libvirtd.log``` file
+
+* Check all qemu logs in ```/var/log/libvirt/qemu/``` directory 
+    
 
 ### Credits
 
