@@ -95,7 +95,8 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
   
 * Add these to your XML for improved performance (not sure if this works for Intel). Check the [win11.xml](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/main/win11.xml) example file for proper placement of the each section.
 
-<details>
+    * <details>
+        <summary>XML Configs</summary>
 ```
       Enabling Hyper-V enlightenments (Windows only)
 
@@ -180,7 +181,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
      </domain>  
      ```
 
-</details>
+    </details>
 
 
 
