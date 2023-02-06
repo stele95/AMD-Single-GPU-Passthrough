@@ -96,92 +96,91 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 * Add these to your XML for improved performance (not sure if this works for Intel). Check the [win11.xml](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/main/win11.xml) example file for proper placement of the each section.
 
     * <details>
-        <summary>XML Configs</summary>
+    <summary>XML Configs</summary>
     ```
-      Enabling Hyper-V enlightenments (Windows only)
+    Enabling Hyper-V enlightenments (Windows only)
 
-      <hyperv mode='custom'>
-        <relaxed state='on'/>
-        <vapic state='on'/>
-        <spinlocks state='on' retries='8191'/>
-        <vpindex state='on'/>
-        <runtime state='on'/>
-        <synic state='on'/>
-        <stimer state='on'/>
-        <reset state='on'/>
-        <vendor_id state='on' value='ASRock'/>  <!-- The value doesn't matter -->
-        <frequencies state='on'/>
-        <reenlightenment state='off'/>   <!-- We use only one guest. Not fully supported on KVM, disable it. -->
-        <tlbflush state='on'/>
-        <ipi state='on'/>
-        <evmcs state='off'/> 		<!-- We do not use nested KVM in Hyper-v -->
-      </hyperv>
-      ```
+    <hyperv mode='custom'>
+       <relaxed state='on'/>
+       <vapic state='on'/>
+       <spinlocks state='on' retries='8191'/>
+       <vpindex state='on'/>
+       <runtime state='on'/>
+       <synic state='on'/>
+       <stimer state='on'/>
+       <reset state='on'/>
+       <vendor_id state='on' value='ASRock'/>  <!-- The value doesn't matter -->
+       <frequencies state='on'/>
+       <reenlightenment state='off'/>   <!-- We use only one guest. Not fully supported on KVM, disable it. -->
+       <tlbflush state='on'/>
+       <ipi state='on'/>
+       <evmcs state='off'/> 		<!-- We do not use nested KVM in Hyper-v -->
+    </hyperv>
+    ```
 
-      ```
-      KVM features (add this below </hyperv> tag)
+    ```
+    KVM features (add this below </hyperv> tag)
 
-      <kvm>
-        <hidden state='on'/>
-        <hint-dedicated state='on'/>
-      </kvm>
-      <vmport state='off'/>
-      <ioapic driver='kvm'/>
-      ```
+    <kvm>
+       <hidden state='on'/>
+       <hint-dedicated state='on'/>
+    </kvm>
+    <vmport state='off'/>
+    <ioapic driver='kvm'/>
+    ```
 
-      ```
-      Passthrough mode and policy
+    ```
+    Passthrough mode and policy
 
-      <cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
-        <topology sockets='1' dies='1' cores='6' threads='2'/>    <!-- Match the cpu topology. In my case 6c/12t, or 2 threads per each core -->
-        <cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
-        <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
-        <feature policy='require' name='svm'/>
-        <feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
-        <feature policy='require' name='hypervisor'/>
-        <feature policy='require' name='invtsc'/>
-      </cpu>
-      ```
+    <cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
+       <topology sockets='1' dies='1' cores='6' threads='2'/>    <!-- Match the cpu topology. In my case 6c/12t, or 2 threads per each core -->
+       <cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
+       <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
+       <feature policy='require' name='svm'/>
+       <feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
+       <feature policy='require' name='hypervisor'/>
+       <feature policy='require' name='invtsc'/>
+    </cpu>
+    ```
 
-      ```
-      Timers
+    ```
+    Timers
 
-      <clock offset="localtime">
-        <timer name="rtc" present="no" tickpolicy="catchup"/>
-        <timer name="pit" present="no" tickpolicy="delay"/>
-        <timer name="hpet" present="no"/>
-        <timer name="kvmclock" present="no"/>
-        <timer name="hypervclock" present="yes"/>
-        <timer name="tsc" present="yes" mode="native"/>
-      </clock>
-      ```
+    <clock offset="localtime">
+       <timer name="rtc" present="no" tickpolicy="catchup"/>
+       <timer name="pit" present="no" tickpolicy="delay"/>
+       <timer name="hpet" present="no"/>
+       <timer name="kvmclock" present="no"/>
+       <timer name="hypervclock" present="yes"/>
+       <timer name="tsc" present="yes" mode="native"/>
+    </clock>
+    ```
 
-      ```
-      Additional libvirt attributes
+    ```
+    Additional libvirt attributes
 
-      <devices>
-      ...
-        <memballoon model='none'/>    <!-- Disable memory ballooning -->
-        <panic model='hyperv'/>	<!-- Provides additional crash information when Windows crashes -->
-      </devices>
-     ```
+    <devices>
+    ...
+       <memballoon model='none'/>    <!-- Disable memory ballooning -->
+       <panic model='hyperv'/>	<!-- Provides additional crash information when Windows crashes -->
+    </devices>
+    ```
 
-     ```
-     Additional QEMU agrs
+    ```
+    Additional QEMU agrs
 
-     You will have to modify virtual machine domain configuration to <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+    You will have to modify virtual machine domain configuration to <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
 
-     <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
-     ...
-       </devices>
-       <qemu:commandline>
-         <qemu:arg value='-overcommit'/>
-         <qemu:arg value='cpu-pm=on'/>
-       </qemu:commandline>
-     </domain>
-     ```
+    <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+    ...
+    </devices>
+    <qemu:commandline>
+       <qemu:arg value='-overcommit'/>
+       <qemu:arg value='cpu-pm=on'/>
+    </qemu:commandline>
+    </domain>
+    ```
     </details>
-
 
 
 ### Hook Scripts
