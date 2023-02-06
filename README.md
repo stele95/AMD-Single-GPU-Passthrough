@@ -109,7 +109,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
         <synic state='on'/>
         <stimer state='on'/>
         <reset state='on'/>
-        <vendor_id state='on' value='ASRock'/>  <!-- The value doesn't matter -->
+        <vendor_id state='on' value='Asus'/>  <!-- The value doesn't matter -->
         <frequencies state='on'/>
         <reenlightenment state='off'/>   <!-- We use only one guest. Not fully supported on KVM, disable it. -->
         <tlbflush state='on'/>
