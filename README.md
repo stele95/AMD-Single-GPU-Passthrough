@@ -73,13 +73,13 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 
     </details>
     
-* If installing Windows 11, remove network adapter from VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows 11 setup forces you to log in with a microsoft account. Continue to installing. When the installation is finished and you get to the "Connect to a network screen" when setting up windows for the first time, do the following steps:
+* If installing Windows 11, remove network adapter from VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows 11 setup forces you to log in with a microsoft account. Continue to installing. When the installation is finished and you get to the "Connect to a network" screen when setting up windows for the first time, do the following steps:
     - press Shift + F10 to opet cmd
     - you might have to click on the cmd window if it doesn't get focused automatically
     - ``cd oobe``
     - type in ``BypassNRO.cmd`` and press enter
 
-    This will restart your PC and you should see the "I don't have internet" button once you get to the "Connect to a network screen" and you should be able to setup a local account like this
+    This will restart your PC and you should see the "I don't have internet" button once you get to the "Connect to a network" screen and you should be able to setup a local account like this
 
 * In order to recognize virtio disk when running installation, don't forget to load virtio driver from virtio-win.iso in the Windows installation.
   * <details>
