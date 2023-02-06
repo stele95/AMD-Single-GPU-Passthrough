@@ -1,5 +1,18 @@
-# AMD Single GPU Passtrough
+# AMD Single GPU Passthrough
 
+<details>
+  <summary>Hardware specifications at the point of writing this</summary>
+
+    * Operating System: EndeavourOS
+    * DE: Gnome
+    * Graphics Platform: Wayland
+    * GPU Drivers: Mesa/amdgpu
+    * Processors: AMD Ryzen 9 5900x
+    * Memory: 32 GiB of RAM
+    * Graphics Processor: Radeon R9 Fury Sapphire Nitro
+    * Motherboard: ASUS Tuf Gaming X570 Plus
+
+</details>
 
 ### Preparations
 
