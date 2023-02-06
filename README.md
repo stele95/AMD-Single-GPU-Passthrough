@@ -59,4 +59,23 @@ echo 0 > $PATH_TO_ROM
 
 ### Hook Scripts
 
-Run the install script as sudo: ``sudo ./install-hooks.sh``. The scripts will successfully install into their required places without issue!
+This is an amazing hook script made by @risingprismtv on gitlab. What this script does is stop your display manager service and all of your running programs, and unhooks your graphics card off of Linux and rehooks it onto the Windows VM.
+
+1) Clone Risngprism's single GPU passthrough gitlab page: ``git clone https://gitlab.com/risingprismtv/single-gpu-passthrough && cd single-gpu-passthrough``.
+2) Run the install script as sudo: ``sudo ./install-hooks.sh``.
+3) The scripts will successfully install into their required places without issue!
+
+### Editing hooks
+This is usefull for people who want to name their VMs to something other than win10.
+
+1) Edit the hooks script by typing ``sudo nano /etc/libvirt/hooks/qemu``
+2) On the line with the if then statement, add in ``|| [[ $OBJECT == "RENAME TO YOUR VM" ]]`` before the ;.
+![Screen Capture_select-area_20211204074514](https://user-images.githubusercontent.com/77298458/144715662-f66088d0-d0b7-44f7-a515-2df7419af11e.png)
+3) Now you should be good to turn on your VM! On Windows drivers will auto install.
+
+
+### Credits
+
+- BigAnteater for easy guide and scripts for setting up GRUB, libvirt and qemu: https://github.com/BigAnteater/KVM-GPU-Passthrough
+- RisingPrismTV for amazing hooks scripts: https://gitlab.com/risingprismtv/single-gpu-passthrough
+- Zile995 for detailed guide: https://github.com/Zile995/PinnacleRidge-Polaris-GPU-Passthrough
