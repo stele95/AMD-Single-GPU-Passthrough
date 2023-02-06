@@ -97,7 +97,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 
     * <details>
         <summary>XML Configs</summary>
-```
+    ```
       Enabling Hyper-V enlightenments (Windows only)
 
       <hyperv mode='custom'>
@@ -178,9 +178,8 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
          <qemu:arg value='-overcommit'/>
          <qemu:arg value='cpu-pm=on'/>
        </qemu:commandline>
-     </domain>  
+     </domain>
      ```
-
     </details>
 
 
