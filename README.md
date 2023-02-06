@@ -30,7 +30,7 @@ For Intel enable
 Clone the repository by typing:
 
 ```
-git clone https://github.com/stele95/AMD-Single-GPU-Passtrough && cd AMD-Single-GPU-Passtrough
+git clone https://github.com/stele95/AMD-Single-GPU-Passthrough && cd AMD-Single-GPU-Passthrough
 ```
 
 ### Preparing GRUB
