@@ -86,7 +86,9 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 
     </details>
     
-* If installing Windows 11, remove the network adapter from the VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows 11 setup forces you to log in with a microsoft account. Continue to installing. When the installation is finished and you get to the "Connect to a network" screen when setting up windows for the first time, do the following steps:
+* If installing Windows 11, remove the network adapter from the VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows 11 setup forces you to log in with a microsoft account. 
+	- Install Windows. 
+	- When the installation is finished and you get to the "Connect to a network" screen when setting up windows for the first time, do the following steps:
     - press Shift + F10 to opet cmd
     - you might have to click on the cmd window if it doesn't get focused automatically
     - ``cd oobe``
@@ -285,7 +287,7 @@ echo 0 > $PATH_TO_ROM
 
 ### Final checks
 
-* You might need to start default network manually:
+* You might need to start the default network manually:
   ```
   sudo virsh net-start default
   sudo virsh net-autostart default
@@ -308,6 +310,8 @@ echo 0 > $PATH_TO_ROM
     log_filters = "2:libvirt.domain 1:qemu"
     log_outputs = "1:file:/var/log/libvirt/libvirtd.log"
     ```
+    
+* Check if CPU and RAM configurations are properly set
     
     
 ### Logging
