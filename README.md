@@ -89,10 +89,10 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 * If installing Windows 11, remove the network adapter from the VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows 11 setup forces you to log in with a microsoft account. 
 	- Install Windows. 
 	- When the installation is finished and you get to the "Connect to a network" screen when setting up windows for the first time, do the following steps:
-    - press Shift + F10 to opet cmd
-    - you might have to click on the cmd window if it doesn't get focused automatically
-    - ``cd oobe``
-    - type in ``BypassNRO.cmd`` and press enter
+    	- press Shift + F10 to opet cmd
+    	- you might have to click on the cmd window if it doesn't get focused automatically
+    	- ``cd oobe``
+    	- type in ``BypassNRO.cmd`` and press enter
 
     This will restart your PC and you should see the "I don't have internet" button once you get to the "Connect to a network" screen and you should be able to setup a local account like this
 
