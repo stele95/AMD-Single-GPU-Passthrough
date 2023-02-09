@@ -362,8 +362,8 @@ echo 0 > $PATH_TO_ROM
  	        │       └── cpu_mode_performance.sh
  	        └── release
   	        	└── end
-				├── ...
-				└── cpu_mode_ondemand.sh
+	                ├── ...
+	                └── cpu_mode_ondemand.sh
 	```
 
 	`cpu_mode_performance.sh`:
