@@ -275,7 +275,7 @@ echo 0 > $PATH_TO_ROM
     Device model: e1000e (could be different name for you, it was first option)
     ```
 
-* Don't forget to add vbios.rom file inside the win10.xml for the GPU and HDMI host PCI devices, example:
+* Don't forget to add vbios.rom file inside the win11.xml (or whatever your VM's name is) for the GPU and HDMI host PCI devices, example:
   ```
     ...
     </source>
