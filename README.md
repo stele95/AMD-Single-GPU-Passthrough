@@ -354,7 +354,7 @@ echo 0 > $PATH_TO_ROM
 	for file in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do cat $file; done
 	``` 
 	
-	Update the ``cpu_mode_schedutil.sh`` located in hooks/win11/release/end and replace ``schedutil`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
+	Update the ``cpu_mode_schedutil.sh`` located in ``hooks/win11/release/end`` and replace ``schedutil`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
 	```
 	chmod +x setup_cpu_governor_hooks.sh
 	sudo ./setup_cpu_governor_hooks.sh

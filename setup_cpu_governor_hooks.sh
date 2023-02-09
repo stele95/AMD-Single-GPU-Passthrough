@@ -5,4 +5,4 @@ if [ $EUID -ne 0 ]
 fi
 echo "This will configure CPU governor hooks."
 cp -r -i hooks /etc/libvirt
-echo "CPU governor hooks copied successfully!"
+echo "CPU governor hooks set up successfully!"
