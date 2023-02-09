@@ -345,7 +345,7 @@ echo 0 > $PATH_TO_ROM
 	Also make sure to update your virtio disk with ```iothread```: ```<driver name="qemu" type="raw" cache="none" io="native" discard="unmap" iothread="1" queues="8"/>```
     
     
-* Cpu Governor
+* CPU Governor
 
 	This tweak takes advantage of the [CPU frequency scaling governor](https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors). 
 	
@@ -362,8 +362,8 @@ echo 0 > $PATH_TO_ROM
  	        │       └── cpu_mode_performance.sh
  	        └── release
   	        	└── end
-         	    ├── ...
-      			└── cpu_mode_ondemand.sh
+				├── ...
+				└── cpu_mode_ondemand.sh
 	```
 
 	`cpu_mode_performance.sh`:
