@@ -319,6 +319,15 @@ echo 0 > $PATH_TO_ROM
 * CPU pinning
 	
 	Since I have a 5900x with 12c/24t, I will be passing 6c/12t from the same CCX to the VM. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
+	You can also use ``virsh capabilities`` and look for a ``<cache>`` part, this will tell you how your cores/threads are separated per L3 cache. It should look something like this:
+	```
+	<cache>
+      <bank id='0' level='3' type='both' size='32' unit='MiB' cpus='0-5,12-17'/>
+      <bank id='1' level='3' type='both' size='32' unit='MiB' cpus='6-11,18-23'/>
+    </cache>
+	```
+	
+	The code for my setup looks like this:
 	
 	```
 	<vcpu placement="static">12</vcpu>
@@ -342,7 +351,7 @@ echo 0 > $PATH_TO_ROM
 	```
 	
 	Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM.
-	Also make sure to update your virtio disk with ``iothread``: ``<driver name="qemu" type="raw" cache="none" io="native" discard="unmap" iothread="1" queues="8"/>``
+	Also, if using virtio disk, make sure to update it with ``iothread``: ``<driver name="qemu" type="raw" cache="none" io="native" discard="unmap" iothread="1" queues="8"/>``. If not, you can remove the ``iothread`` from the code above.
     
     
 * CPU Governor
@@ -351,7 +360,7 @@ echo 0 > $PATH_TO_ROM
 	
 	My CPU uses ``schedutil`` as the default governor. Please check which is the default for your CPU by running the following command in the terminal: 
 	```
-	for file in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do cat $file; done
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 	``` 
 	
 	Update the ``cpu_mode_schedutil.sh`` located in ``hooks/win11/release/end`` and replace ``schedutil`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
