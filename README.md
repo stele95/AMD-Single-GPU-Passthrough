@@ -345,6 +345,55 @@ echo 0 > $PATH_TO_ROM
 	Also make sure to update your virtio disk with ```iothread```: ```<driver name="qemu" type="raw" cache="none" io="native" discard="unmap" iothread="1" queues="8"/>```
     
     
+* Cpu Governor
+
+	This tweak takes advantage of the [CPU frequency scaling governor](https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors). 
+	
+	```
+	$ tree /etc/libvirt/hooks/
+	/etc/libvirt/hooks/
+	├── kvm.conf
+	├── qemu
+	└── qemu.d
+    	└── win11
+	        ├── prepare
+  	        │   └── begin
+ 	        │       ├── ...
+ 	        │       └── cpu_mode_performance.sh
+ 	        └── release
+  	        	└── end
+         	    ├── ...
+      			└── cpu_mode_ondemand.sh
+	```
+
+	`cpu_mode_performance.sh`:
+	```
+	#!/bin/bash
+
+	## Load the config file
+	source "/etc/libvirt/hooks/kvm.conf"
+
+	## Enable CPU governor performance mode
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+	for file in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo "performance" > $file; done
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+	```
+
+	`cpu_mode_ondemand.sh`:
+	```
+	#!/bin/bash
+	
+	## Load the config file
+	source "/etc/libvirt/hooks/kvm.conf"
+
+	## Enable CPU governor on-demand mode
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+	for file in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo "ondemand" > $file; done
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+	```
+    
+    
 ### Logging
 
 * Check all hook logs with ```sudo cat /dev/kmsg | grep libvirt-qemu```
@@ -359,4 +408,4 @@ echo 0 > $PATH_TO_ROM
 - BigAnteater for easy guide and scripts for setting up GRUB, libvirt and qemu: https://github.com/BigAnteater/KVM-GPU-Passthrough
 - RisingPrismTV for amazing hooks scripts: https://gitlab.com/risingprismtv/single-gpu-passthrough
 - Zile995 for the really detailed guide: https://github.com/Zile995/PinnacleRidge-Polaris-GPU-Passthrough
-- Bryansteiner for detailes on CPU Pinning: https://github.com/bryansteiner/gpu-passthrough-tutorial
+- Bryansteiner for details on CPU pinning and governor: https://github.com/bryansteiner/gpu-passthrough-tutorial
