@@ -233,7 +233,7 @@ echo 0 > $PATH_TO_ROM
 1) Run `exit` or press Ctrl-D to stop acting as `root`
 
 
-## Passthrough (virt-manager)
+### Passthrough (virt-manager)
 
 * Open the virt-manager and add GPU PCI Host devices, both GPU and HDMI Audio devices. Remove DisplaySpice, VideoQXL and other serial devices only from XML file. Also delete all spice related things and usb redirections.
   * ```
@@ -312,6 +312,37 @@ echo 0 > $PATH_TO_ROM
     ```
     
 * Check if CPU and RAM configurations are properly set
+
+
+### Improving VM and CPU performance
+
+* CPU pinning
+	
+	Since I have a 5900x with 12c/24t, I will be passing 6c/12t from the same CCX to the VM. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning). If using ```lstopo``` and you have ```PU#``` and ```P#``` for threads, look at the ```P#``` value for the thread id.
+	
+	```
+	<vcpu placement="static">12</vcpu>
+	<iothreads>1</iothreads>
+    <cputune>
+      <vcpupin vcpu="0" cpuset="0"/>
+      <vcpupin vcpu="1" cpuset="12"/>
+      <vcpupin vcpu="2" cpuset="1"/>
+      <vcpupin vcpu="3" cpuset="13"/>
+      <vcpupin vcpu="4" cpuset="2"/>
+      <vcpupin vcpu="5" cpuset="14"/>
+      <vcpupin vcpu="6" cpuset="3"/>
+      <vcpupin vcpu="7" cpuset="15"/>
+      <vcpupin vcpu="8" cpuset="4"/>
+      <vcpupin vcpu="9" cpuset="16"/>
+      <vcpupin vcpu="10" cpuset="5"/>
+      <vcpupin vcpu="11" cpuset="17"/>
+      <emulatorpin cpuset="6,7,18,19"/>
+      <iothreadpin iothread='1' cpuset='8-11,20-23'/>
+	</cputune>
+	```
+	
+	Make sure to update the ```<cpu>``` topology to match the number of cores and threads you are passing to the VM.
+	Also make sure to update your virtio disk with ```iothread```: ```<driver name="qemu" type="raw" cache="none" io="native" discard="unmap" iothread="1" queues="8"/>```
     
     
 ### Logging
@@ -328,3 +359,4 @@ echo 0 > $PATH_TO_ROM
 - BigAnteater for easy guide and scripts for setting up GRUB, libvirt and qemu: https://github.com/BigAnteater/KVM-GPU-Passthrough
 - RisingPrismTV for amazing hooks scripts: https://gitlab.com/risingprismtv/single-gpu-passthrough
 - Zile995 for the really detailed guide: https://github.com/Zile995/PinnacleRidge-Polaris-GPU-Passthrough
+- Bryansteiner for detailes on CPU Pinning: https://github.com/bryansteiner/gpu-passthrough-tutorial
