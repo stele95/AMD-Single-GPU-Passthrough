@@ -206,7 +206,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 ### Editing hooks
 
 1) Edit the hooks script by typing ``sudo nano /etc/libvirt/hooks/qemu``
-2) On the line with the if then statement rename change the name to the name of your VM.
+2) On the line with the if then statement change the name to the name of your VM.
 
 ![VM hook name](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/b7519539cb7c9542bb4b0cdb7e251e7f6930148d/images/vm%20hook%20name.png)
 
