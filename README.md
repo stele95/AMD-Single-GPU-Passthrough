@@ -403,6 +403,12 @@ echo 0 > $PATH_TO_ROM
 		
 		![remove cache](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/c1748d9438767a48052cdbdfa77a9a0046c4d018/images/remove%20cache.png)
     
+* Line-Based vs. Message Signaled-Based Interrupts (MSI)
+  
+  - This can sometimes help with audio stutters and cracks.
+  - TL/DR: With this you can switch from Line-Based to MSI for improved interrupts handling which should improve audio stutters and cracks and some potential VM crashes related to interrupts.
+  - Take a look at [this](https://forums.guru3d.com/threads/windows-line-based-vs-message-signaled-based-interrupts-msi-tool.378044/) detailed guide. I used MSI Utility V3 from the link in the post to switch to MSI
+    
     
 ### Logging
 
