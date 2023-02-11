@@ -389,8 +389,9 @@ echo 0 > $PATH_TO_ROM
 	
 * CPU passthrough mode
 	
-	- To check cache latency, use AIDA64 Memory & Cache benchmarks (Tools->Memory & Cache benchmarks).
-	- Also check your cache topology inside the VM using [Coreinfo](https://learn.microsoft.com/en-us/sysinternals/downloads/coreinfo)
+	- This might not work as expected, as for me the latency improved but the L3 cache size changed from 32MB to 16MB, so I ended up not using this.
+	- To check the cache latency, use AIDA64 Memory & Cache benchmarks (Tools->Memory & Cache benchmarks).
+	- Also check your cache topology and size inside the VM using [Coreinfo](https://learn.microsoft.com/en-us/sysinternals/downloads/coreinfo)
 	- This does not necessarily improve your performance, so please benchmark before and after to see which is better.
 	- We can improve cache latency by changing from ``<cpu mode="host-passthrough">`` to a custom mode that better matches your CPU.
 		1) To get a detailed info about your CPU, run ``virsh capabilities`` inside your terminal, look for ``<arch>x86_64</arch>`` and under that arch look for ``<model>``. This is the model we are going to use inside our VM setup.
@@ -398,7 +399,7 @@ echo 0 > $PATH_TO_ROM
 		
 		![CPU model select](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/c1748d9438767a48052cdbdfa77a9a0046c4d018/images/CPU%20model%20select.png)
 		
-		3) You might want to remove the ``cache`` option from the ``<cpu>``. For me, it didn't make a difference in latency benchmarks so I removed it, but that might not be the case for you, so benchmark it. You can also try ``<cache level="3" mode="emulate"/>`` and see if that improves the performance.
+		3) You will have to remove the ``<cache mode="passthrough"/>`` option from the ``<cpu>`` inside your XML for this to work. You can try ``<cache level="3" mode="emulate"/>`` and see if that improves the performance over having no ``cache`` option. For me, it didn't make a difference in latency benchmarks so I removed it, but that might not be the case for you, so benchmark it.
 		
 		![remove cache](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/c1748d9438767a48052cdbdfa77a9a0046c4d018/images/remove%20cache.png)
     

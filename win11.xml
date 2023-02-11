@@ -58,9 +58,9 @@
     <vmport state="off"/>
     <smm state="on"/>
   </features>
-  <cpu mode="custom" match="exact" check="none">
-    <model fallback="allow">EPYC-Rome</model>
+  <cpu mode="host-passthrough" check="none" migratable="on">
     <topology sockets="1" dies="1" cores="6" threads="2"/>
+    <cache mode="passthrough"/>
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="svm"/>
     <feature policy="require" name="apic"/>
