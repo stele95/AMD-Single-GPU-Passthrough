@@ -207,7 +207,9 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 
 1) Edit the hooks script by typing ``sudo nano /etc/libvirt/hooks/qemu``
 2) On the line with the if then statement, add in ``|| [[ $OBJECT == "RENAME TO YOUR VM" ]]`` before the ;.
-![Screen Capture_select-area_20211204074514](https://user-images.githubusercontent.com/77298458/144715662-f66088d0-d0b7-44f7-a515-2df7419af11e.png)
+
+![rename VM](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/aab9159ad0a8a07e1519470fb5fa3eeb9ecaa193/images/vm%20hook.png)
+
 3) Now you should be good to turn on your VM! On Windows drivers will auto install.
 
 
@@ -395,6 +397,9 @@ echo 0 > $PATH_TO_ROM
 	- This does not necessarily improve your performance, so please benchmark before and after to see which is better.
 	- We can improve cache latency by changing from ``<cpu mode="host-passthrough">`` to a custom mode that better matches your CPU.
 		1) To get a detailed info about your CPU, run ``virsh capabilities`` inside your terminal, look for ``<arch>x86_64</arch>`` and under that arch look for ``<model>``. This is the model we are going to use inside our VM setup.
+		
+		![virsh capabilities](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/aab9159ad0a8a07e1519470fb5fa3eeb9ecaa193/images/virsh%20capabilities.png)
+		
 		2) Go to VM settings, CPU, uncheck the ``Copy host CPU configuration`` and select the model you got from the previous step in the drop down menu.
 		
 		![CPU model select](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/c1748d9438767a48052cdbdfa77a9a0046c4d018/images/CPU%20model%20select.png)
