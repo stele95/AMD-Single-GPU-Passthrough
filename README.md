@@ -206,7 +206,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 ### Editing hooks
 
 1) Edit the hooks script by typing ``sudo nano /etc/libvirt/hooks/qemu``
-2) On the line with the if then statement, add in ``|| [[ $OBJECT == "RENAME TO YOUR VM" ]]`` before the ;.
+2) On the line with the if then statement rename ``win10`` to the name of your VM.
 
 ![rename VM](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/aab9159ad0a8a07e1519470fb5fa3eeb9ecaa193/images/vm%20hook.png)
 
