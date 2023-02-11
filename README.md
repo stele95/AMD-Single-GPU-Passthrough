@@ -206,9 +206,9 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 ### Editing hooks
 
 1) Edit the hooks script by typing ``sudo nano /etc/libvirt/hooks/qemu``
-2) On the line with the if then statement rename ``win10`` to the name of your VM.
+2) On the line with the if then statement rename change the name to the name of your VM.
 
-![rename VM](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/aab9159ad0a8a07e1519470fb5fa3eeb9ecaa193/images/vm%20hook.png)
+![VM hook name](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/b7519539cb7c9542bb4b0cdb7e251e7f6930148d/images/vm%20hook%20name.png)
 
 3) Now you should be good to turn on your VM! On Windows drivers will auto install.
 
@@ -398,7 +398,7 @@ echo 0 > $PATH_TO_ROM
 	- We can improve cache latency by changing from ``<cpu mode="host-passthrough">`` to a custom mode that better matches your CPU.
 		1) To get a detailed info about your CPU, run ``virsh capabilities`` inside your terminal, look for ``<arch>x86_64</arch>`` and under that arch look for ``<model>``. This is the model we are going to use inside our VM setup.
 		
-		![virsh capabilities](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/aab9159ad0a8a07e1519470fb5fa3eeb9ecaa193/images/virsh%20capabilities.png)
+		![virsh capabilities model](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/b7519539cb7c9542bb4b0cdb7e251e7f6930148d/images/virsh%20capabilities%20model.png)
 		
 		2) Go to VM settings, CPU, uncheck the ``Copy host CPU configuration`` and select the model you got from the previous step in the drop down menu.
 		
