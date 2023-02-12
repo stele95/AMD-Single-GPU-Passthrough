@@ -72,6 +72,10 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
       ![Screenshot from 2022-05-23 15-24-43](https://user-images.githubusercontent.com/32335484/169831867-c173ccae-de54-4bf4-bf7e-e1a29f855f33.png)
 
     </details>
+    
+* Your VM settings should look similar to this before starting the installation. You can remove all unnecessary devices before starting the installation.
+
+	![VM setup before installation](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/4bc2714a5ace13cf20bf6e84c1039ce800763452/images/VM%20setup%20before%20installation.png)
 
 * In order to recognize virtio disk when running installation, don't forget to load virtio driver from virtio-win.iso in the Windows installation.
   * <details>
