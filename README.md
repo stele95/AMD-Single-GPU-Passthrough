@@ -399,16 +399,15 @@ echo 0 > $PATH_TO_ROM
 	$ tree /etc/libvirt/hooks/
 	/etc/libvirt/hooks/
 	├── qemu
-	└── qemu.d
-        └── {name of your VM}
-            ├── prepare
-  	        │   └── begin
- 	        │       ├── ...
- 	        │       └── cpu_mode_performance.sh
- 	        └── release
-                └── end
-	                ├── ...
-	                └── cpu_mode_schedutil.sh
+    └── {name of your VM}
+        ├── prepare
+  	    │   └── begin
+        │       ├── ...
+        │       └── cpu_mode_performance.sh
+ 	    └── release
+            └── end
+	            ├── ...
+	            └── cpu_mode_schedutil.sh
 	```
 	
 * CPU passthrough mode
