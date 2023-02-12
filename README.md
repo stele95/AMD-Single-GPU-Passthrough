@@ -53,11 +53,11 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 
 ### Setting up Windows 11 VM
 
-* Open the virt-manager and prepare Windows iso, also use the ```raw``` image ```virtio``` disk. For Windows 11, you need to have over 54 GB of storage space.
+* Open the virt-manager and prepare Windows iso, also use the ``raw`` image ``virtio`` disk. For Windows 11, you need to have over 54 GB of storage space.
 
-* Use the Q35 chipset and OVMF_CODE.secboot.fd bootloader. 
+* Use the ``Q35`` chipset and ``OVMF_CODE.secboot.fd`` bootloader. 
     
-* For Win11 installation, add a TPM emulator in your xml file:
+* For Windows 11 installation, add a TPM emulator in your xml file:
   ```
   <tpm model="tpm-tis">
     <backend type="emulator" version="2.0"/>
@@ -143,7 +143,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
       Passthrough mode and policy
 
       <cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
-        <topology sockets='1' dies='1' cores='6' threads='2'/>    <!-- Match the cpu topology. In my case 6c/12t, or 2 threads per each core -->
+        <topology sockets='1' dies='1' cores='8' threads='2'/>    <!-- Match the cpu topology. In my case 8c/16t, or 2 threads per each core -->
         <cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
         <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
         <feature policy='require' name='svm'/>
@@ -269,7 +269,7 @@ echo 0 > $PATH_TO_ROM
 
 * Add USB Host devices, like keyboard, mouse... 
 
-* For sound: You can passthrough the PCI HD Audio controler
+* For sound: You can passthrough the PCI HD Audio controller. BUT, be carefull. Ryzen 3000 and above apparently have problems when passing HD Audio Controller and USB controller that's on the same PCI bus as audio controller. For more info, look at [this](https://www.reddit.com/r/VFIO/comments/eba5mh/workaround_patch_for_passing_through_usb_and/?sort=new).
 
 * If Virtual Network Interface is not present (NIC :xx:xx:xx), add it through Add hardware button
     ```
@@ -320,8 +320,9 @@ echo 0 > $PATH_TO_ROM
 
 * CPU pinning
 	
-	Since I have a 5900x with 12c/24t, I will be passing 6c/12t from the same CCX to the VM. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
-	You can also use ``virsh capabilities`` and look for a ``<cache>`` part, this will tell you how your cores/threads are separated per L3 cache. It should look something like this:
+	- It is a general recommendation to leave core 0 from all CCXs to the host.
+	- Since I have a 5900x with 12c/24t, I will be passing 8c/16t with a setup of 4c/8t from the same CCX to the VM, so it will be two CCXs with 4c/8t. The rest will be pinned to host and iothread. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning) and [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_topology). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
+	- You can also use ``virsh capabilities`` and look for a ``<cache>`` part, this will tell you how your cores/threads are separated per L3 cache. It should look something like this:
 	```
 	<cache>
       <bank id='0' level='3' type='both' size='32' unit='MiB' cpus='0-5,12-17'/>
@@ -329,30 +330,47 @@ echo 0 > $PATH_TO_ROM
     </cache>
 	```
 	
-	The code for my setup looks like this:
+	- The code for my setup looks like this:
 	
 	```
-	<vcpu placement="static">12</vcpu>
+	<vcpu placement="static">16</vcpu>
 	<iothreads>1</iothreads>
     <cputune>
-      <vcpupin vcpu="0" cpuset="0"/>
-      <vcpupin vcpu="1" cpuset="12"/>
-      <vcpupin vcpu="2" cpuset="1"/>
-      <vcpupin vcpu="3" cpuset="13"/>
-      <vcpupin vcpu="4" cpuset="2"/>
-      <vcpupin vcpu="5" cpuset="14"/>
-      <vcpupin vcpu="6" cpuset="3"/>
-      <vcpupin vcpu="7" cpuset="15"/>
-      <vcpupin vcpu="8" cpuset="4"/>
-      <vcpupin vcpu="9" cpuset="16"/>
-      <vcpupin vcpu="10" cpuset="5"/>
-      <vcpupin vcpu="11" cpuset="17"/>
-      <emulatorpin cpuset="6,7,18,19"/>
-      <iothreadpin iothread='1' cpuset='8-11,20-23'/>
+      <vcpupin vcpu="0" cpuset="2"/>
+      <vcpupin vcpu="1" cpuset="14"/>
+      <vcpupin vcpu="2" cpuset="3"/>
+      <vcpupin vcpu="3" cpuset="15"/>
+      <vcpupin vcpu="4" cpuset="4"/>
+      <vcpupin vcpu="5" cpuset="16"/>
+      <vcpupin vcpu="6" cpuset="5"/>
+      <vcpupin vcpu="7" cpuset="17"/>
+      <vcpupin vcpu="8" cpuset="8"/>
+      <vcpupin vcpu="9" cpuset="20"/>
+      <vcpupin vcpu="10" cpuset="9"/>
+      <vcpupin vcpu="11" cpuset="21"/>
+      <vcpupin vcpu="12" cpuset="10"/>
+      <vcpupin vcpu="13" cpuset="22"/>
+      <vcpupin vcpu="14" cpuset="11"/>
+      <vcpupin vcpu="15" cpuset="23"/>
+      <emulatorpin cpuset="0,12,6,18"/>
+      <iothreadpin iothread='1' cpuset='1,13,7,19'/>
 	</cputune>
 	```
 	
-	Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM.
+	Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM. For my setup, it looks like this:
+	
+	```
+	<cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
+        <topology sockets='1' dies='1' cores='8' threads='2'/>    <!-- Match the cpu topology. In my case 8c/16t, or 8 cores, 2 threads per each core -->
+        <cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
+        <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
+        <feature policy='require' name='svm'/>
+        <feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
+        <feature policy='require' name='hypervisor'/>
+        <feature policy='require' name='invtsc'/>
+      </cpu>  
+	```
+	
 	Also, if using virtio disk, make sure to update it with ``iothread``: ``<driver name="qemu" type="raw" cache="none" io="native" discard="unmap" iothread="1" queues="8"/>``. If not, you can remove the ``iothread`` from the code above.
     
     
