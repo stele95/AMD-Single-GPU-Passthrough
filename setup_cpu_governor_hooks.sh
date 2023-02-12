@@ -5,4 +5,6 @@ if [ $EUID -ne 0 ]
 fi
 echo "This will configure CPU governor hooks."
 cp -r -i hooks /etc/libvirt
+chmod +x /etc/libvirt/hooks/*/prepare/begin/cpu_mode_performance.sh
+chmod +x /etc/libvirt/hooks/*/release/end/cpu_mode_*.sh
 echo "CPU governor hooks set up successfully!"
