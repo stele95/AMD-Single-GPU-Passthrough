@@ -53,7 +53,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 
 ### Setting up Windows 11 VM
 
-* Open the virt-manager and prepare Windows iso, also use the ``raw`` image ``virtio`` disk. For Windows 11, you need to have over 54 GB of storage space.
+* Open the virt-manager and prepare Windows iso, I used ``sata`` and ``qcow2`` for the disk type. For Windows 11, you need to have over 54 GB of storage space.
 
 * Use the ``Q35`` chipset and ``OVMF_CODE.secboot.fd`` bootloader. 
     
@@ -63,32 +63,10 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
     <backend type="emulator" version="2.0"/>
   </tpm>
   ```
-
-* Before installing Windows, mount the [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/) disk first in virt-manager alongside the windows iso
-  * <details>
-	
-      <summary>virt-manager virtio-win.iso mounting</summary>
-  
-      ![Screenshot from 2022-05-23 15-24-43](https://user-images.githubusercontent.com/32335484/169831867-c173ccae-de54-4bf4-bf7e-e1a29f855f33.png)
-
-    </details>
     
 * Your VM settings should look similar to this before starting the installation. You can remove all unnecessary devices before starting the installation.
 
 	![VM setup before installation](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/4bc2714a5ace13cf20bf6e84c1039ce800763452/images/VM%20setup%20before%20installation.png)
-
-* In order to recognize virtio disk when running installation, don't forget to load virtio driver from virtio-win.iso in the Windows installation.
-  * <details>
-	
-      <summary>Virtio storage driver loading procedure</summary>
-  
-      ![Screenshot from 2022-05-21 17-31-56](https://user-images.githubusercontent.com/32335484/169829750-a95c0d90-78ed-4b86-ad86-9d6f71557cf7.png)
-	
-      ![Screenshot from 2022-05-21 17-31-11](https://user-images.githubusercontent.com/32335484/169829787-58e1fa9e-994d-4b45-8726-9e28ce684049.png)
-	
-      ![Screenshot from 2022-05-21 17-32-27](https://user-images.githubusercontent.com/32335484/169829829-476fd7c4-fa7e-43f5-b0ee-de57a5d0e833.png)
-
-    </details>
     
 * If installing Windows 11, remove the network adapter from the VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows 11 setup forces you to log in with a microsoft account. 
 	- Install Windows. 
@@ -99,8 +77,6 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
     	- type in ``BypassNRO.cmd`` and press enter
 
     This will restart your PC and you should see the "I don't have internet" button once you get to the "Connect to a network" screen and you should be able to setup a local account like this
-
-* After the installation, boot into Windows and install all virtio drivers from the device manager. You can get drivers from virtio-win.iso. Just load all drivers from virtio-win.iso through ```Add driver``` option in Device Manager
 
 * Disable memballoon in your xml file:
   ```
@@ -325,7 +301,7 @@ echo 0 > $PATH_TO_ROM
 * CPU pinning
 	
 	- It is a general recommendation to leave core 0 from all CCXs to the host.
-	- Since I have a 5900x with 12c/24t, I will be passing 8c/16t with a setup of 4c/8t from the same CCX to the VM, so it will be two CCXs with 4c/8t. The rest will be pinned to host and iothread. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning) and [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_topology). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
+	- Since I have a 5900x with 12c/24t, I will be passing 8c/16t with a setup of 4c/8t from the same CCX to the VM, so it will be two CCXs with 4c/8t. The rest will be pinned to host. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning) and [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_topology). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
 	- You can also use ``virsh capabilities`` and look for a ``<cache>`` part, this will tell you how your cores/threads are separated per L3 cache. It should look something like this:
 	```
 	<cache>
@@ -338,7 +314,6 @@ echo 0 > $PATH_TO_ROM
 	
 	```
 	<vcpu placement="static">16</vcpu>
-	<iothreads>1</iothreads>
     <cputune>
       <vcpupin vcpu="0" cpuset="2"/>
       <vcpupin vcpu="1" cpuset="14"/>
@@ -356,8 +331,7 @@ echo 0 > $PATH_TO_ROM
       <vcpupin vcpu="13" cpuset="22"/>
       <vcpupin vcpu="14" cpuset="11"/>
       <vcpupin vcpu="15" cpuset="23"/>
-      <emulatorpin cpuset="0,12,6,18"/>
-      <iothreadpin iothread='1' cpuset='1,13,7,19'/>
+      <emulatorpin cpuset="0-1,12-13,6-7,18-19"/>
 	</cputune>
 	```
 	
@@ -374,8 +348,6 @@ echo 0 > $PATH_TO_ROM
         <feature policy='require' name='invtsc'/>
       </cpu>  
 	```
-	
-	Also, if using virtio disk, make sure to update it with ``iothread``: ``<driver name="qemu" type="raw" cache="none" io="native" discard="unmap" iothread="1" queues="8"/>``. If not, you can remove the ``iothread`` from the code above.
     
     
 * CPU Governor

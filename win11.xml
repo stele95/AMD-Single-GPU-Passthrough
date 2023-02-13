@@ -1,36 +1,19 @@
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
-  <name>win11</name>
-  <uuid>ea199f1b-d112-4007-aa3f-a0da63a02d20</uuid>
+  <name>win11-2</name>
+  <uuid>22fcda8c-7cca-49a0-b1b7-72c5a09e186a</uuid>
   <metadata>
     <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
       <libosinfo:os id="http://microsoft.com/win/11"/>
     </libosinfo:libosinfo>
   </metadata>
-  <memory unit="KiB">20480000</memory>
-  <currentMemory unit="KiB">20480000</currentMemory>
-  <vcpu placement="static">12</vcpu>
-  <iothreads>1</iothreads>
-  <cputune>
-    <vcpupin vcpu="0" cpuset="0"/>
-    <vcpupin vcpu="1" cpuset="12"/>
-    <vcpupin vcpu="2" cpuset="1"/>
-    <vcpupin vcpu="3" cpuset="13"/>
-    <vcpupin vcpu="4" cpuset="2"/>
-    <vcpupin vcpu="5" cpuset="14"/>
-    <vcpupin vcpu="6" cpuset="3"/>
-    <vcpupin vcpu="7" cpuset="15"/>
-    <vcpupin vcpu="8" cpuset="4"/>
-    <vcpupin vcpu="9" cpuset="16"/>
-    <vcpupin vcpu="10" cpuset="5"/>
-    <vcpupin vcpu="11" cpuset="17"/>
-    <emulatorpin cpuset="6-7,18-19"/>
-    <iothreadpin iothread="1" cpuset="8-11,20-23"/>
-  </cputune>
+  <memory unit="KiB">20971520</memory>
+  <currentMemory unit="KiB">20971520</currentMemory>
+  <vcpu placement="static">16</vcpu>
   <os>
     <type arch="x86_64" machine="pc-q35-7.2">hvm</type>
     <loader readonly="yes" secure="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.secboot.fd</loader>
-    <nvram>/var/lib/libvirt/qemu/nvram/win11_VARS.fd</nvram>
-    <bootmenu enable="yes"/>
+    <nvram>/var/lib/libvirt/qemu/nvram/win11-2_VARS.fd</nvram>
+    <boot dev="hd"/>
   </os>
   <features>
     <acpi/>
@@ -57,9 +40,10 @@
     </kvm>
     <vmport state="off"/>
     <smm state="on"/>
+    <ioapic driver="kvm"/>
   </features>
   <cpu mode="host-passthrough" check="none" migratable="on">
-    <topology sockets="1" dies="1" cores="6" threads="2"/>
+    <topology sockets="1" dies="1" cores="8" threads="2"/>
     <cache mode="passthrough"/>
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="svm"/>
@@ -85,14 +69,13 @@
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type="file" device="disk">
-      <driver name="qemu" type="raw" cache="none" io="native" discard="unmap" iothread="1" queues="8"/>
-      <source file="/mnt/games_partition/games/Win11VM/win11.img"/>
-      <target dev="vda" bus="virtio"/>
-      <boot order="1"/>
-      <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
+      <driver name="qemu" type="qcow2"/>
+      <source file="/mnt/games_partition/games/Win11VM/win11-2.qcow2"/>
+      <target dev="sda" bus="sata"/>
+      <address type="drive" controller="0" bus="0" target="0" unit="0"/>
     </disk>
     <controller type="usb" index="0" model="qemu-xhci" ports="15">
-      <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
     </controller>
     <controller type="pci" index="0" model="pcie-root"/>
     <controller type="pci" index="1" model="pcie-root-port">
@@ -168,14 +151,11 @@
     <controller type="sata" index="0">
       <address type="pci" domain="0x0000" bus="0x00" slot="0x1f" function="0x2"/>
     </controller>
-    <controller type="virtio-serial" index="0">
-      <address type="pci" domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
-    </controller>
     <interface type="network">
-      <mac address="52:54:00:2b:11:5f"/>
+      <mac address="52:54:00:81:f0:4f"/>
       <source network="default"/>
       <model type="e1000e"/>
-      <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
     </interface>
     <input type="mouse" bus="ps2"/>
     <input type="keyboard" bus="ps2"/>
@@ -188,44 +168,46 @@
         <address domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
       </source>
       <rom file="/var/lib/libvirt/vbios/gpu.rom"/>
-      <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
     </hostdev>
     <hostdev mode="subsystem" type="pci" managed="yes">
       <source>
         <address domain="0x0000" bus="0x09" slot="0x00" function="0x1"/>
       </source>
       <rom file="/var/lib/libvirt/vbios/gpu.rom"/>
-      <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
     </hostdev>
-    <hostdev mode="subsystem" type="pci" managed="yes">
+    <hostdev mode="subsystem" type="usb" managed="yes">
       <source>
-        <address domain="0x0000" bus="0x0b" slot="0x00" function="0x4"/>
+        <vendor id="0x0b05"/>
+        <product id="0x190e"/>
       </source>
-      <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
+      <address type="usb" bus="0" port="1"/>
+    </hostdev>
+    <hostdev mode="subsystem" type="usb" managed="yes">
+      <source>
+        <vendor id="0x046d"/>
+        <product id="0xc53a"/>
+      </source>
+      <address type="usb" bus="0" port="2"/>
     </hostdev>
     <hostdev mode="subsystem" type="pci" managed="yes">
       <source>
         <address domain="0x0000" bus="0x06" slot="0x00" function="0x1"/>
       </source>
-      <address type="pci" domain="0x0000" bus="0x08" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
     </hostdev>
     <hostdev mode="subsystem" type="pci" managed="yes">
       <source>
         <address domain="0x0000" bus="0x06" slot="0x00" function="0x3"/>
       </source>
-      <address type="pci" domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
-    </hostdev>
-    <hostdev mode="subsystem" type="pci" managed="yes">
-      <source>
-        <address domain="0x0000" bus="0x0b" slot="0x00" function="0x3"/>
-      </source>
-      <address type="pci" domain="0x0000" bus="0x0a" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
     </hostdev>
     <hostdev mode="subsystem" type="pci" managed="yes">
       <source>
         <address domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
       </source>
-      <address type="pci" domain="0x0000" bus="0x0b" slot="0x00" function="0x0"/>
+      <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>
     </hostdev>
     <memballoon model="none"/>
     <panic model="hyperv"/>
