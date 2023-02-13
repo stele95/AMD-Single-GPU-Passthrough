@@ -66,7 +66,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
     
 * Your VM settings should look similar to this before starting the installation. You can remove all unnecessary devices before starting the installation.
 
-	![VM setup before installation](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/4bc2714a5ace13cf20bf6e84c1039ce800763452/images/VM%20setup%20before%20installation.png)
+	![VM setup before installation](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/7bcdf74d3449eb5562e85d459138cbf75927cf6c/images/VM%20setup%20before%20installation.png)
     
 * If installing Windows 11, remove the network adapter from the VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows 11 setup forces you to log in with a microsoft account. 
 	- Install Windows. 
