@@ -193,22 +193,29 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 ### Exporting your ROM
 
 1) Find your GPU's device ID: `lspci -vnn | grep '\[03'`. You should see some output such as the following; the first bit (`09:00.0` in this case) is the device ID.
+
 	```
 	09:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Fiji [Radeon R9 FURY / NANO Series] [1002:7300] (rev cb)
 	```
-1) Run `find /sys/devices -name rom` and ensure the device ID matches. For example looking at the case above, you'll want the last part before the `/rom` to be `09:00.0`, so you might see something like this (the extra `0000:` in front is fine):
+	
+2) Run `find /sys/devices -name rom` and ensure the device ID matches. For example looking at the case above, you'll want the last part before the `/rom` to be `09:00.0`, so you might see something like this (the extra `0000:` in front is fine):
+
 	```
 	/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom
 	```
-2) For convenience's sake, let's call this PATH_TO_ROM. You can manually set this variable as well, by first becoming root (run `sudo su`) then running `export PATH_TO_ROM=/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom`
-3) Then, still as `root`, run the following commands:
+	
+3) For convenience's sake, let's call this PATH_TO_ROM. You can manually set this variable as well, by first becoming root (run `sudo su`) then running `export PATH_TO_ROM=/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom`
+
+4) Then, still as `root`, run the following commands:
+
 	```
 	echo 1 > $PATH_TO_ROM
 	mkdir -p /var/lib/libvirt/vbios/
 	cat $PATH_TO_ROM > /var/lib/libvirt/vbios/gpu.rom
 	echo 0 > $PATH_TO_ROM
 	```
-4) Run `exit` to stop acting as `root`
+	
+5) Run `exit` to stop acting as `root`
 
 
 ### Passthrough (virt-manager)
