@@ -107,7 +107,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
       </details>
 
       - <details>
-		  <summary>KVM features (add this below ``</hyperv>`` tag)</summary>
+		  <summary>KVM features (add this below ```</hyperv>``` tag)</summary>
 		  
 		  ```
 		  <kvm>
