@@ -313,63 +313,64 @@ echo 0 > $PATH_TO_ROM
 	- Try to match the L3 cache core assignments by adding fake cores that won't be enabled. Take a look at my code bellow and pay attention to ``vcpu``s with ``enabled="no"``. Those are fake cores that will be disabled, but are present so the assignment of cores per L3 cache is correct. For this, you will need to use ``CoreInfo`` inside the VM and figure out how many fake cores do you need and where do you need to put them.
 	
 		- <details>
-	<summary>The code for my setup</summary>
+			<summary>The code for my setup</summary>
+			
+			```
+			<vcpu placement="static" current="20">26</vcpu>
+			<vcpus>
+			  <vcpu id="0" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="1" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="2" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="3" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="4" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="5" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="6" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="7" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="8" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="9" enabled="yes" hotpluggable="no"/>
+			  <vcpu id="10" enabled="no" hotpluggable="yes"/>
+			  <vcpu id="11" enabled="no" hotpluggable="yes"/>
+			  <vcpu id="12" enabled="no" hotpluggable="yes"/>
+			  <vcpu id="13" enabled="no" hotpluggable="yes"/>
+			  <vcpu id="14" enabled="no" hotpluggable="yes"/>
+			  <vcpu id="15" enabled="no" hotpluggable="yes"/>
+			  <vcpu id="16" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="17" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="18" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="19" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="20" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="21" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="22" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="23" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="24" enabled="yes" hotpluggable="yes"/>
+			  <vcpu id="25" enabled="yes" hotpluggable="yes"/>
+			</vcpus>
+			<cputune>
+			  <vcpupin vcpu="0" cpuset="1"/>
+			  <vcpupin vcpu="1" cpuset="13"/>
+			  <vcpupin vcpu="2" cpuset="2"/>
+			  <vcpupin vcpu="3" cpuset="14"/>
+			  <vcpupin vcpu="4" cpuset="3"/>
+			  <vcpupin vcpu="5" cpuset="15"/>
+			  <vcpupin vcpu="6" cpuset="4"/>
+			  <vcpupin vcpu="7" cpuset="16"/>
+			  <vcpupin vcpu="8" cpuset="5"/>
+			  <vcpupin vcpu="9" cpuset="17"/>
+			  <vcpupin vcpu="16" cpuset="7"/>
+			  <vcpupin vcpu="17" cpuset="19"/>
+			  <vcpupin vcpu="18" cpuset="8"/>
+			  <vcpupin vcpu="19" cpuset="20"/>
+			  <vcpupin vcpu="20" cpuset="9"/>
+			  <vcpupin vcpu="21" cpuset="21"/>
+			  <vcpupin vcpu="22" cpuset="10"/>
+			  <vcpupin vcpu="23" cpuset="22"/>
+			  <vcpupin vcpu="24" cpuset="11"/>
+			  <vcpupin vcpu="25" cpuset="23"/>
+			  <emulatorpin cpuset="0,6,12,18"/>
+			</cputune>
+			```
 	
-	```
-	<vcpu placement="static" current="20">26</vcpu>
-    <vcpus>
-      <vcpu id="0" enabled="yes" hotpluggable="no"/>
-      <vcpu id="1" enabled="yes" hotpluggable="no"/>
-      <vcpu id="2" enabled="yes" hotpluggable="no"/>
-      <vcpu id="3" enabled="yes" hotpluggable="no"/>
-      <vcpu id="4" enabled="yes" hotpluggable="no"/>
-      <vcpu id="5" enabled="yes" hotpluggable="no"/>
-      <vcpu id="6" enabled="yes" hotpluggable="no"/>
-      <vcpu id="7" enabled="yes" hotpluggable="no"/>
-      <vcpu id="8" enabled="yes" hotpluggable="no"/>
-      <vcpu id="9" enabled="yes" hotpluggable="no"/>
-      <vcpu id="10" enabled="no" hotpluggable="yes"/>
-      <vcpu id="11" enabled="no" hotpluggable="yes"/>
-      <vcpu id="12" enabled="no" hotpluggable="yes"/>
-      <vcpu id="13" enabled="no" hotpluggable="yes"/>
-      <vcpu id="14" enabled="no" hotpluggable="yes"/>
-      <vcpu id="15" enabled="no" hotpluggable="yes"/>
-      <vcpu id="16" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="17" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="18" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="19" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="20" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="21" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="22" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="23" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="24" enabled="yes" hotpluggable="yes"/>
-      <vcpu id="25" enabled="yes" hotpluggable="yes"/>
-    </vcpus>
-    <cputune>
-      <vcpupin vcpu="0" cpuset="1"/>
-      <vcpupin vcpu="1" cpuset="13"/>
-      <vcpupin vcpu="2" cpuset="2"/>
-      <vcpupin vcpu="3" cpuset="14"/>
-      <vcpupin vcpu="4" cpuset="3"/>
-      <vcpupin vcpu="5" cpuset="15"/>
-      <vcpupin vcpu="6" cpuset="4"/>
-      <vcpupin vcpu="7" cpuset="16"/>
-      <vcpupin vcpu="8" cpuset="5"/>
-      <vcpupin vcpu="9" cpuset="17"/>
-      <vcpupin vcpu="16" cpuset="7"/>
-      <vcpupin vcpu="17" cpuset="19"/>
-      <vcpupin vcpu="18" cpuset="8"/>
-      <vcpupin vcpu="19" cpuset="20"/>
-      <vcpupin vcpu="20" cpuset="9"/>
-      <vcpupin vcpu="21" cpuset="21"/>
-      <vcpupin vcpu="22" cpuset="10"/>
-      <vcpupin vcpu="23" cpuset="22"/>
-      <vcpupin vcpu="24" cpuset="11"/>
-      <vcpupin vcpu="25" cpuset="23"/>
-      <emulatorpin cpuset="0,6,12,18"/>
-    </cputune>
-	```
-	</details>
+</details>
 	
 	- Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM. For my setup, it looks like this:
 	
