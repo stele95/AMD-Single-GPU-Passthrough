@@ -301,7 +301,7 @@ echo 0 > $PATH_TO_ROM
 * CPU pinning
 	
 	- It is a general recommendation to leave core 0 from all CCXs to the host.
-	- Since I have a 5900x with 12c/24t, I will be passing 8c/16t with a setup of 4c/8t from the same CCX to the VM, so it will be two CCXs with 4c/8t. The rest will be pinned to host. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning) and [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_topology). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
+	- Since I have a 5900x with 12c/24t, I will be passing 10c/20t with a setup of 5c/10t from the same CCX to the VM, so it will be two CCXs with 5c/10t. The rest will be pinned to the host. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning) and [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_topology). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
 	- You can also use ``virsh capabilities`` and look for a ``<cache>`` part, this will tell you how your cores/threads are separated per L3 cache. It should look something like this:
 	```
 	<cache>
@@ -310,36 +310,73 @@ echo 0 > $PATH_TO_ROM
     </cache>
 	```
 	
-	- The code for my setup looks like this:
+	- Try to match the L3 cache core assignments by adding fake cores that won't be enabled. Take a look at my code bellow and pay attention to ``vcpu``s with ``enabled="no"``. Those are fake cores that will be disabled, but are present so the assignment of cores per L3 cache is correct. For this, you will need to use ``CoreInfo`` inside the VM and figure out how many fake cores do you need and where do you need to put them.
+	
+		- <details>
+	<summary>The code for my setup</summary>
 	
 	```
-	<vcpu placement="static">16</vcpu>
+	<vcpu placement="static" current="20">26</vcpu>
+    <vcpus>
+      <vcpu id="0" enabled="yes" hotpluggable="no"/>
+      <vcpu id="1" enabled="yes" hotpluggable="no"/>
+      <vcpu id="2" enabled="yes" hotpluggable="no"/>
+      <vcpu id="3" enabled="yes" hotpluggable="no"/>
+      <vcpu id="4" enabled="yes" hotpluggable="no"/>
+      <vcpu id="5" enabled="yes" hotpluggable="no"/>
+      <vcpu id="6" enabled="yes" hotpluggable="no"/>
+      <vcpu id="7" enabled="yes" hotpluggable="no"/>
+      <vcpu id="8" enabled="yes" hotpluggable="no"/>
+      <vcpu id="9" enabled="yes" hotpluggable="no"/>
+      <vcpu id="10" enabled="no" hotpluggable="yes"/>
+      <vcpu id="11" enabled="no" hotpluggable="yes"/>
+      <vcpu id="12" enabled="no" hotpluggable="yes"/>
+      <vcpu id="13" enabled="no" hotpluggable="yes"/>
+      <vcpu id="14" enabled="no" hotpluggable="yes"/>
+      <vcpu id="15" enabled="no" hotpluggable="yes"/>
+      <vcpu id="16" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="17" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="18" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="19" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="20" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="21" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="22" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="23" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="24" enabled="yes" hotpluggable="yes"/>
+      <vcpu id="25" enabled="yes" hotpluggable="yes"/>
+    </vcpus>
     <cputune>
-      <vcpupin vcpu="0" cpuset="2"/>
-      <vcpupin vcpu="1" cpuset="14"/>
-      <vcpupin vcpu="2" cpuset="3"/>
-      <vcpupin vcpu="3" cpuset="15"/>
-      <vcpupin vcpu="4" cpuset="4"/>
-      <vcpupin vcpu="5" cpuset="16"/>
-      <vcpupin vcpu="6" cpuset="5"/>
-      <vcpupin vcpu="7" cpuset="17"/>
-      <vcpupin vcpu="8" cpuset="8"/>
-      <vcpupin vcpu="9" cpuset="20"/>
-      <vcpupin vcpu="10" cpuset="9"/>
-      <vcpupin vcpu="11" cpuset="21"/>
-      <vcpupin vcpu="12" cpuset="10"/>
-      <vcpupin vcpu="13" cpuset="22"/>
-      <vcpupin vcpu="14" cpuset="11"/>
-      <vcpupin vcpu="15" cpuset="23"/>
-      <emulatorpin cpuset="0-1,12-13,6-7,18-19"/>
-	</cputune>
+      <vcpupin vcpu="0" cpuset="1"/>
+      <vcpupin vcpu="1" cpuset="13"/>
+      <vcpupin vcpu="2" cpuset="2"/>
+      <vcpupin vcpu="3" cpuset="14"/>
+      <vcpupin vcpu="4" cpuset="3"/>
+      <vcpupin vcpu="5" cpuset="15"/>
+      <vcpupin vcpu="6" cpuset="4"/>
+      <vcpupin vcpu="7" cpuset="16"/>
+      <vcpupin vcpu="8" cpuset="5"/>
+      <vcpupin vcpu="9" cpuset="17"/>
+      <vcpupin vcpu="16" cpuset="7"/>
+      <vcpupin vcpu="17" cpuset="19"/>
+      <vcpupin vcpu="18" cpuset="8"/>
+      <vcpupin vcpu="19" cpuset="20"/>
+      <vcpupin vcpu="20" cpuset="9"/>
+      <vcpupin vcpu="21" cpuset="21"/>
+      <vcpupin vcpu="22" cpuset="10"/>
+      <vcpupin vcpu="23" cpuset="22"/>
+      <vcpupin vcpu="24" cpuset="11"/>
+      <vcpupin vcpu="25" cpuset="23"/>
+      <emulatorpin cpuset="0,6,12,18"/>
+    </cputune>
 	```
+	</details>
 	
-	Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM. For my setup, it looks like this:
+	- Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM. For my setup, it looks like this:
 	
 	```
 	<cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
-        <topology sockets='1' dies='1' cores='8' threads='2'/>    <!-- Match the cpu topology. In my case 8c/16t, or 8 cores, 2 threads per each core -->
+	    <!-- 13c/26t because 3c/6t are disabled and 10c/20t are used to match the proper L3 cache placement -->
+        <topology sockets='1' dies='1' cores='13' threads='2'/>
         <cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
         <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
         <feature policy='require' name='svm'/>
