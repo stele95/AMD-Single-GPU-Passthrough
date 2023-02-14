@@ -415,7 +415,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 	
 	Update the ``cpu_mode_schedutil.sh`` located in ``hooks/win11/release/end`` and replace ``schedutil`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
 	```
-	chmod +x setup_cpu_governor_hooks.sh &&	sudo ./setup_cpu_governor_hooks.sh
+	chmod +x setup_cpu_governor_hooks.sh && sudo ./setup_cpu_governor_hooks.sh
 	```
 	
 	The file tree should look similar to this now:
