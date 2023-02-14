@@ -241,9 +241,9 @@ echo 0 > $PATH_TO_ROM
     ```
   * <details>
 	
-      <summary>Adding GPU PCI Host devices</summary>
+      <summary>Add GPU PCI Host devices. Make sure to add all of them from the same bus as the GPU</summary>
   
-      ![Screenshot from 2022-05-23 15-48-07](https://user-images.githubusercontent.com/32335484/169833957-2c48ff46-bd9c-40a7-95c1-2c3bc72bc72a.png)
+      ![Adding GPU](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/87474aa95ca56090fef927c3019b1da648c78610/images/Adding%20GPU.png)
 
     </details>
 
@@ -370,22 +370,22 @@ echo 0 > $PATH_TO_ROM
 			</cputune>
 			```
 	
-</details>
+		</details>
 	
-	- Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM. For my setup, it looks like this:
+		- Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM. For my setup, it looks like this:
 	
-	```
-	<cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
-	    <!-- 13c/26t because 3c/6t are disabled and 10c/20t are used to match the proper L3 cache placement -->
-        <topology sockets='1' dies='1' cores='13' threads='2'/>
-        <cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
-        <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
-        <feature policy='require' name='svm'/>
-        <feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
-        <feature policy='require' name='hypervisor'/>
-        <feature policy='require' name='invtsc'/>
-      </cpu>  
-	```
+		```
+		<cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
+			<!-- 13c/26t because 3c/6t are disabled and 10c/20t are used to match the proper L3 cache placement -->
+		    <topology sockets='1' dies='1' cores='13' threads='2'/>
+		    <cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
+		    <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
+		    <feature policy='require' name='svm'/>
+		    <feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
+		    <feature policy='require' name='hypervisor'/>
+		    <feature policy='require' name='invtsc'/>
+		  </cpu>  
+		```
     
     
 * CPU Governor
