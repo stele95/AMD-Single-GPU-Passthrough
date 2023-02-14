@@ -29,21 +29,18 @@ To prepare, make sure you have virtualization features enabled in your BIOS.
 
 * Clone the repository by typing:
 
-```
-git clone https://github.com/stele95/AMD-Single-GPU-Passthrough && cd AMD-Single-GPU-Passthrough
-```
+	```
+	git clone https://github.com/stele95/AMD-Single-GPU-Passthrough && cd AMD-Single-GPU-Passthrough
+	```
 
 
 ### Preparing GRUB
 
 Preparing GRUB is very simple.
 
-1) Mark the script as executable:
-    - AMD: ``chmod +x grub_setup_amd.sh`` 
-    - Intel: ``chmod +x grub_setup_intel.sh``
-2) Then run the script and follow instructions:
-    - AMD: ``sudo ./grub_setup_amd.sh`` 
-    - Intel: ``sudo ./grub_setup_intel.sh``
+* Mark the script as executable and follow instructions:
+    - AMD: ``chmod +x grub_setup_amd.sh && sudo ./grub_setup_amd.sh`` 
+    - Intel: ``chmod +x grub_setup_intel.sh && sudo ./grub_setup_intel.sh``
 
 
 ### Configuring Libvirt
@@ -188,7 +185,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 1) Edit the hooks script by typing ``sudo nano /etc/libvirt/hooks/qemu``
 2) On the line with the if then statement change the name to the name of your VM.
 
-![VM hook name](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/b7519539cb7c9542bb4b0cdb7e251e7f6930148d/images/vm%20hook%20name.png)
+	![VM hook name](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/b7519539cb7c9542bb4b0cdb7e251e7f6930148d/images/vm%20hook%20name.png)
 
 3) Now you should be good to turn on your VM! On Windows drivers will auto install.
 
@@ -196,23 +193,22 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 ### Exporting your ROM
 
 1) Find your GPU's device ID: `lspci -vnn | grep '\[03'`. You should see some output such as the following; the first bit (`09:00.0` in this case) is the device ID.
-```
-09:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Fiji [Radeon R9 FURY / NANO Series] [1002:7300] (rev cb)
-```
-1) Run `find /sys/devices -name rom` and ensure the device ID matches.
-For example looking at the case above, you'll want the last part before the `/rom` to be `09:00.0`, so you might see something like this (the extra `0000:` in front is fine):
-```
-/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom
-```
-1) For convenience's sake, let's call this PATH_TO_ROM. You can manually set this variable as well, by first becoming root (run `sudo su`) then running `export PATH_TO_ROM=/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom`
-1) Then, still as `root`, run the following commands:
-```
-echo 1 > $PATH_TO_ROM
-mkdir -p /var/lib/libvirt/vbios/
-cat $PATH_TO_ROM > /var/lib/libvirt/vbios/gpu.rom
-echo 0 > $PATH_TO_ROM
-```
-1) Run `exit` or press Ctrl-D to stop acting as `root`
+	```
+	09:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Fiji [Radeon R9 FURY / NANO Series] [1002:7300] (rev cb)
+	```
+1) Run `find /sys/devices -name rom` and ensure the device ID matches. For example looking at the case above, you'll want the last part before the `/rom` to be `09:00.0`, so you might see something like this (the extra `0000:` in front is fine):
+	```
+	/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom
+	```
+2) For convenience's sake, let's call this PATH_TO_ROM. You can manually set this variable as well, by first becoming root (run `sudo su`) then running `export PATH_TO_ROM=/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom`
+3) Then, still as `root`, run the following commands:
+	```
+	echo 1 > $PATH_TO_ROM
+	mkdir -p /var/lib/libvirt/vbios/
+	cat $PATH_TO_ROM > /var/lib/libvirt/vbios/gpu.rom
+	echo 0 > $PATH_TO_ROM
+	```
+4) Run `exit` to stop acting as `root`
 
 
 ### Passthrough (virt-manager)
@@ -239,6 +235,7 @@ echo 0 > $PATH_TO_ROM
     <!-- Remove console -->
     <console type="pty"/>
     ```
+    
   * <details>
 	
       <summary>Add GPU PCI Host devices. Make sure to add all of them from the same bus as the GPU</summary>
@@ -275,8 +272,7 @@ echo 0 > $PATH_TO_ROM
   sudo virsh net-autostart default
   ```
   
-* Don't forget to edit:
-  * /etc/libvirt/qemu.conf
+* Don't forget to edit `/etc/libvirt/qemu.conf`:
     ```
     user = "yourusername"
     group = "kvm"
@@ -303,12 +299,13 @@ echo 0 > $PATH_TO_ROM
 	- It is a general recommendation to leave core 0 from all CCXs to the host.
 	- Since I have a 5900x with 12c/24t, I will be passing 10c/20t with a setup of 5c/10t from the same CCX to the VM, so it will be two CCXs with 5c/10t. The rest will be pinned to the host. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning) and [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_topology). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
 	- You can also use ``virsh capabilities`` and look for a ``<cache>`` part, this will tell you how your cores/threads are separated per L3 cache. It should look something like this:
-	```
-	<cache>
-      <bank id='0' level='3' type='both' size='32' unit='MiB' cpus='0-5,12-17'/>
-      <bank id='1' level='3' type='both' size='32' unit='MiB' cpus='6-11,18-23'/>
-    </cache>
-	```
+	
+		```
+		<cache>
+		  <bank id='0' level='3' type='both' size='32' unit='MiB' cpus='0-5,12-17'/>
+		  <bank id='1' level='3' type='both' size='32' unit='MiB' cpus='6-11,18-23'/>
+		</cache>
+		```
 	
 	- Try to match the L3 cache core assignments by adding fake cores that won't be enabled. Take a look at my code bellow and pay attention to ``vcpu``s with ``enabled="no"``. Those are fake cores that will be disabled, but are present so the assignment of cores per L3 cache is correct. For this, you will need to use ``CoreInfo`` inside the VM and figure out how many fake cores do you need and where do you need to put them.
 	
@@ -399,8 +396,7 @@ echo 0 > $PATH_TO_ROM
 	
 	Update the ``cpu_mode_schedutil.sh`` located in ``hooks/win11/release/end`` and replace ``schedutil`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
 	```
-	chmod +x setup_cpu_governor_hooks.sh
-	sudo ./setup_cpu_governor_hooks.sh
+	chmod +x setup_cpu_governor_hooks.sh &&	sudo ./setup_cpu_governor_hooks.sh
 	```
 	
 	The file tree should look similar to this now:
