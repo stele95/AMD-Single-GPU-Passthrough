@@ -125,6 +125,13 @@
       <target dev="sda" bus="sata"/>
       <address type="drive" controller="0" bus="0" target="0" unit="0"/>
     </disk>
+    <disk type="file" device="cdrom">
+      <driver name="qemu" type="raw"/>
+      <source file="/home/stele/Downloads/virtio-win-0.1.229.iso"/>
+      <target dev="sdb" bus="sata"/>
+      <readonly/>
+      <address type="drive" controller="0" bus="0" target="0" unit="1"/>
+    </disk>
     <controller type="pci" index="0" model="pcie-root"/>
     <controller type="pci" index="1" model="pcie-root-port">
       <model name="pcie-root-port"/>
@@ -167,10 +174,10 @@
     <controller type="usb" index="0" model="qemu-xhci">
       <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
     </controller>
-    <interface type="network">
+    <interface type="bridge">
       <mac address="52:54:00:81:f0:4f"/>
-      <source network="default"/>
-      <model type="e1000e"/>
+      <source bridge="virbr0"/>
+      <model type="virtio"/>
       <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
     </interface>
     <input type="mouse" bus="ps2"/>
