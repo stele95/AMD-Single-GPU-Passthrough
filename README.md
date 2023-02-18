@@ -267,7 +267,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 
 * Add USB Host devices, like keyboard, mouse... 
 
-* For sound: You can passthrough the PCI HD Audio controller. BUT, be carefull. Ryzen 3000 and above apparently have problems when passing HD Audio Controller and USB controller that's on the same PCI bus as audio controller. For more info, look at [this](https://www.reddit.com/r/VFIO/comments/eba5mh/workaround_patch_for_passing_through_usb_and/?sort=new).
+* For sound: You can passthrough the PCI HD Audio controller. BUT, be carefull. Ryzen 3000 and above apparently have problems when passing HD Audio Controller and USB controller that's on the same PCI bus as audio controller. For more info, look at [this](https://www.reddit.com/r/VFIO/comments/eba5mh/workaround_patch_for_passing_through_usb_and/?sort=new). If you are having issues with audio controller passthrough, you can set your audio up differently. Use [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_audio_from_virtual_machine_to_host_via_PulseAudio) for `PulseAudio` or [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_audio_from_virtual_machine_to_host_via_JACK_and_PipeWire) for `PipeWire`.
 
 * If Virtual Network Interface is not present (NIC :xx:xx:xx), add it through Add hardware button
     ```
