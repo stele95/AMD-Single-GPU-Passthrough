@@ -204,7 +204,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 3) Now you should be good to turn on your VM! On Windows drivers will auto install.
 
 
-### Exporting your ROM
+### Exporting your ROM (Optional, do this if the VM is not starting or shutting down correctly)
 
 1) Find your GPU's device ID: `lspci -vnn | grep '\[03'`. You should see some output such as the following; the first bit (`09:00.0` in this case) is the device ID.
 
@@ -275,7 +275,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
     Device model: e1000e (could be different name for you, it was first option)
     ```
 
-* Don't forget to add vbios.rom file inside the win11.xml (or whatever your VM's name is) for the GPU and HDMI host PCI devices, example:
+* If you need to export your GPU rom (optional step from above), don't forget to add vbios.rom file inside the win11.xml (or whatever your VM's name is) for the GPU and HDMI host PCI devices, example:
   ```
     ...
     </source>
