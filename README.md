@@ -45,7 +45,7 @@ Preparing GRUB is very simple.
 
 ### Configuring Libvirt
 
-To configure libvirt run the script which configures libvirt and QEMU by typing ``sudo ./libvirt_configuration.sh``.
+To configure libvirt run the script which configures libvirt and QEMU by typing ``./libvirt_configuration.sh``.
 
 
 ### Setting up Windows 11 VM
