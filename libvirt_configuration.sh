@@ -1,6 +1,6 @@
 echo "This will install and configure libvirt."
 sleep 1s
-sudo pacman -S --needed libvirt libvirt-glib libvirt-python virt-install virt-manager qemu-desktop ovmf vde2 ebtables dnsmasq bridge-utils openbsd-netcat iptables swtpm
+sudo pacman -S --needed libvirt libvirt-glib libvirt-python virt-install virt-manager qemu-desktop ovmf vde2 ebtables dnsmasq bridge-utils openbsd-netcat iptables-nft swtpm
 sleep 1s
 echo "Editting libvirtd.conf"
 echo "mv /etc/libvirt/libvirtd.conf /etc/libvirt/libvirtd.conf.old"
