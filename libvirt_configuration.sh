@@ -13,7 +13,7 @@ echo "cp libvirtd.conf /etc/libvirt"
 sudo cp libvirtd.conf /etc/libvirt
 sudo sleep 1s
 echo "libvirt has been successfully configured!"
-echo "Edittin QEMU configs"
+echo "Editting QEMU configs"
 sleep 2s
 echo "mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old"
 sudo mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old
