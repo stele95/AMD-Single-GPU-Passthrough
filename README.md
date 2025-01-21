@@ -414,14 +414,14 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
 
 	This tweak takes advantage of the [CPU frequency scaling governor](https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors). 
 	
-	My CPU uses ``schedutil`` as the default governor. Please check which is the default for your CPU by running the following command in the terminal: 
+	My CPU uses ``powersave`` as the default governor. Please check which is the default for your CPU by running the following command in the terminal: 
 	```
 	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 	``` 
 	
-	Update the ``cpu_mode_schedutil.sh`` located in ``hooks/win11/release/end`` and replace ``schedutil`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
+	Update the ``cpu_mode_schedutil.sh`` located in ``hooks/win11/release/end`` and replace ``powersave`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
 	```
-	chmod +x setup_cpu_governor_hooks.sh && sudo ./setup_cpu_governor_hooks.sh
+	sudo ./setup_cpu_governor_hooks.sh
 	```
 	
 	The file tree should look similar to this now:
