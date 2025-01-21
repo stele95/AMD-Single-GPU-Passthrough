@@ -4,12 +4,12 @@
   <summary>Hardware specifications at the point of writing this</summary>
 
     * Operating System: EndeavourOS
-    * DE: Gnome
+    * DE: KDE Plasma 6
     * Graphics Platform: Wayland
     * GPU Drivers: Mesa/amdgpu
     * Processors: AMD Ryzen 9 5900x
     * Memory: 32 GiB of RAM
-    * Graphics Processor: Radeon R9 Fury Sapphire Nitro
+    * Graphics Processor: AsRock 7900XTX Taichi
     * Motherboard: ASUS Tuf Gaming X570 Plus
 
 </details>
@@ -27,7 +27,7 @@ To prepare, make sure you have virtualization features enabled in your BIOS.
   - VT-d
   - VT-x
 
-* Clone the repository by typing:
+* Clone the repository:
 
 	```
 	git clone https://github.com/stele95/AMD-Single-GPU-Passthrough && cd AMD-Single-GPU-Passthrough
@@ -38,9 +38,9 @@ To prepare, make sure you have virtualization features enabled in your BIOS.
 
 Preparing GRUB is very simple.
 
-* Mark the script as executable and follow instructions:
-    - AMD: ``chmod +x grub_setup_amd.sh && sudo ./grub_setup_amd.sh`` 
-    - Intel: ``chmod +x grub_setup_intel.sh && sudo ./grub_setup_intel.sh``
+* Run the appropriate script based on your cpu:
+    - AMD: ``sudo ./grub_setup_amd.sh`` 
+    - Intel: ``sudo ./grub_setup_intel.sh``
 
 
 ### Configuring Libvirt
@@ -54,7 +54,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 
 * You can use `virtio` disks for supposedly improved performance, but for me regular `sata` felt like it works better. You can read more about it [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Virtio_disk) and you'll need drivers from [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/).
 
-* Use the ``Q35`` chipset and ``OVMF_CODE.secboot.fd`` bootloader. 
+* Use the ``Q35`` chipset and ``x64/OVMF_CODE.secboot.4m.fd`` bootloader.
     
 * For Windows 11 installation, add a TPM emulator in your xml file:
   ```
@@ -65,7 +65,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
     
 * Your VM settings should look similar to this before starting the installation. You can remove all unnecessary devices before starting the installation.
 
-	![VM setup before installation](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/7bcdf74d3449eb5562e85d459138cbf75927cf6c/images/VM%20setup%20before%20installation.png)
+	![VM setup before installation](./images/VM%20setup%20before%20installation.png)
     
 * If installing Windows 11, remove the network adapter from the VM (NIC :xx:xx:xx) or disconnect from the internet on your host OS before starting the installation because windows 11 setup forces you to log in with a microsoft account. 
 	- Install Windows. 
@@ -82,7 +82,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
   <memballoon model="none"/>
   ```
   
-* Add these to your XML for improved performance (not sure if this works for Intel). Check the [win11.xml](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/main/win11.xml) example file for proper placement of each section.
+* Add these to your XML for improved performance (not sure if this works for Intel). Check the [win11.xml](./win11.xml) example file for proper placement of each section.
   * XML Configs
       
       - <details>
@@ -196,10 +196,10 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 
 ### Editing hooks
 
-1) Edit the hooks script by typing ``sudo nano /etc/libvirt/hooks/qemu``
+1) Edit the hooks script located at ``/etc/libvirt/hooks/qemu``
 2) On the line with the if then statement change the name to the name of your VM.
 
-	![VM hook name](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/b7519539cb7c9542bb4b0cdb7e251e7f6930148d/images/vm%20hook%20name.png)
+	![VM hook name](./images/vm%20hook%20name.png)
 
 3) Now you should be good to turn on your VM! On Windows drivers will auto install.
 
@@ -261,7 +261,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 	
       <summary>Add GPU PCI Host devices. Make sure to add all of them from the same bus as the GPU</summary>
   
-      ![Adding GPU](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/87474aa95ca56090fef927c3019b1da648c78610/images/Adding%20GPU.png)
+      ![Adding GPU](./images/Adding%20GPU.png)
 
     </details>
 
@@ -447,15 +447,15 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 	- We can improve cache latency by changing from ``<cpu mode="host-passthrough">`` to a custom mode that better matches your CPU.
 		1) To get a detailed info about your CPU, run ``virsh capabilities`` inside your terminal, look for ``<arch>x86_64</arch>`` and under that arch look for ``<model>``. This is the model we are going to use inside our VM setup.
 		
-		   ![virsh capabilities model](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/b7519539cb7c9542bb4b0cdb7e251e7f6930148d/images/virsh%20capabilities%20model.png)
+		   ![virsh capabilities model](./images/virsh%20capabilities%20model.png)
 		
 		2) Go to VM settings, CPU, uncheck the ``Copy host CPU configuration`` and select the model you got from the previous step in the drop down menu.
 		
-		   ![CPU model select](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/c1748d9438767a48052cdbdfa77a9a0046c4d018/images/CPU%20model%20select.png)
+		   ![CPU model select](./images/CPU%20model%20select.png)
 		
 		3) You will have to remove the ``<cache mode="passthrough"/>`` option from the ``<cpu>`` inside your XML for this to work. You can try ``<cache level="3" mode="emulate"/>`` and see if that improves the performance over having no ``cache`` option. For me, it didn't make a difference in latency benchmarks so I removed it, but that might not be the case for you, so benchmark it.
 		
-		   ![remove cache](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/c1748d9438767a48052cdbdfa77a9a0046c4d018/images/remove%20cache.png)
+		   ![remove cache](./images/remove%20cache.png)
     
     
 * Line-Based vs. Message Signaled-Based Interrupts (MSI)
@@ -470,7 +470,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
   - Follow [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Virtio_network) link to possibly improve internet performance.
   - TL/DR: Set the network device as in the following picture. You will need the `NetKVM` driver for the ethernet controller inside the VM found in [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/) file.
   
-  	![Internet setup](https://github.com/stele95/AMD-Single-GPU-Passthrough/blob/c39dde5cb09c0943fafa3d4c373151cf191b2bc0/images/Internet%20setup.png)
+  	![Internet setup](./images/Internet%20setup.png)
     
     
 ### Logging
