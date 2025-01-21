@@ -419,7 +419,7 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
 	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 	``` 
 	
-	Update the ``cpu_mode_schedutil.sh`` located in ``hooks/win11/release/end`` and replace ``powersave`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
+	Update the ``cpu_mode_release.sh`` located in ``hooks/win11/release/end`` and replace ``powersave`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
 	```
 	sudo ./setup_cpu_governor_hooks.sh
 	```
@@ -438,7 +438,7 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
  	    └── release
             └── end
 	            ├── ...
-	            └── cpu_mode_schedutil.sh
+	            └── cpu_mode_release.sh
 	```
 	
 	
