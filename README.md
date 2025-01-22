@@ -14,6 +14,24 @@
 
 </details>
 
+### Table of contents
+* [Preparations](#preparations)
+* [Preparing GRUB](#preparing-grub)
+* [Configuring Libvirt](#configuring-libvirt)
+* [Setting up Windows VM](#setting-up-windows-vm)
+* [Hook scripts](#hook-scripts)
+	* [Editing hooks](#editing-hooks)
+* [Export GPU ROM](#export-gpu-rom)
+* [Passthrough (virt-manager)](#passthrough-virt-manager)
+* [Final checks](#final-checks)
+* [Improving VM and CPU performance](#improving-vm-and-cpu-performance)
+	* [CPU pinning](#cpu-pinning)
+	* [CPU Governor](#cpu-governor)
+	* [CPU passthrough mode](#cpu-passthrough-mode)
+	* [Line-Based vs. Message Signaled-Based Interrupts (MSI)](#line-based-vs-message-signaled-based-interrupts-msi)
+	* [Internet improvements](#internet-improvements)
+* [Logging](#logging)
+
 ### Preparations
 
 To prepare, make sure you have virtualization features enabled in your BIOS.
@@ -48,7 +66,7 @@ Preparing GRUB is very simple.
 To configure libvirt run the script which configures libvirt and QEMU by typing ``./libvirt_configuration.sh``.
 
 
-### Setting up Windows 11 VM
+### Setting up Windows VM
 
 * Open the virt-manager and prepare Windows iso, I used ``sata`` and ``qcow2`` for the disk type. For Windows 11, you need to have over 54 GB of storage space.
 
@@ -194,7 +212,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 3) The scripts will successfully install into their required places without issue!
 
 
-### Editing hooks
+#### Editing hooks
 
 1) Edit the hooks script located at ``/etc/libvirt/hooks/qemu``
 2) On the line with the if then statement change the name to the name of your VM.
@@ -204,7 +222,7 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 3) Now you should be good to turn on your VM! On Windows drivers will auto install.
 
 
-### Exporting your ROM (Mandatory for 7900XTX, optional for older GPUs if the VM is not starting or shutting down properly)
+### Export GPU ROM (Mandatory for 7900XTX, optional for older GPUs if the VM is not starting or shutting down properly)
 
 The best way is to extract it from Windows using GPU-Z and copy that file to ``/var/lib/libvirt/vbios/``. In case you don't have access to Windows installation, try the following steps:
 
@@ -236,8 +254,8 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
 
 ### Passthrough (virt-manager)
 
-* Open the virt-manager and add GPU PCI Host devices, both GPU and HDMI Audio devices. Remove DisplaySpice, VideoQXL and other serial devices only from XML file. Also delete all spice related things and usb redirections.
-  * ```
+* Open the virt-manager and remove DisplaySpice, VideoQXL and other serial devices from XML file. Also delete all spice related things and usb redirections.
+   ```
     <!-- Remove Display Spice -->
     <graphics type="spice" port="-1" tlsPort="-1" autoport="yes">
       <image compression="off"/>
@@ -259,13 +277,9 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
     <console type="pty"/>
     ```
     
-  * <details>
-	
-      <summary>Add GPU PCI Host devices. Make sure to add all of them from the same bus as the GPU</summary>
+* Add GPU and HDMI/DP Audio PCI Host devices. Make sure to add all of them from the same bus as the GPU
   
-      ![Adding GPU](./images/Adding%20GPU.png)
-
-    </details>
+	![Adding GPU](./images/Adding%20GPU.png)
 
 * Add USB Host devices, like keyboard, mouse... 
 
@@ -319,164 +333,164 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
 
 ### Improving VM and CPU performance
 
-* CPU pinning
+#### CPU pinning
 	
-	- It is a general recommendation to leave core 0 from all CCXs to the host.
-	- Since I have a 5900x with 12c/24t, I will be passing 10c/20t with a setup of 5c/10t from the same CCX to the VM, so it will be two CCXs with 5c/10t. The rest will be pinned to the host. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning) and [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_topology). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
-	- You can also use ``virsh capabilities`` and look for a ``<cache>`` part, this will tell you how your cores/threads are separated per L3 cache. It should look something like this:
+- It is a general recommendation to leave core 0 from all CCXs to the host.
+- Since I have a 5900x with 12c/24t, I will be passing 10c/20t with a setup of 5c/10t from the same CCX to the VM, so it will be two CCXs with 5c/10t. The rest will be pinned to the host. If you have a different CPU, this config will not apply to you, but you can check for a more detailed information on how to set this up [here](https://github.com/bryansteiner/gpu-passthrough-tutorial#----cpu-pinning) and [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_topology). If using ``lstopo`` and you have ``PU#`` and ``P#`` for threads, look at the ``P#`` value for the thread id.
+- You can also use ``virsh capabilities`` and look for a ``<cache>`` part, this will tell you how your cores/threads are separated per L3 cache. It should look something like this:
 	
-		```
-		<cache>
-		  <bank id='0' level='3' type='both' size='32' unit='MiB' cpus='0-5,12-17'/>
-		  <bank id='1' level='3' type='both' size='32' unit='MiB' cpus='6-11,18-23'/>
-		</cache>
-		```
+	```
+	<cache>
+	  <bank id='0' level='3' type='both' size='32' unit='MiB' cpus='0-5,12-17'/>
+	  <bank id='1' level='3' type='both' size='32' unit='MiB' cpus='6-11,18-23'/>
+	</cache>
+	```
 	
-	- Try to match the L3 cache core assignments by adding fake cores that won't be enabled. Take a look at my code bellow and pay attention to ``vcpu``s with ``enabled="no"``. Those are fake cores that will be disabled, but are present so the assignment of cores per L3 cache is correct. For this, you will need to use ``CoreInfo`` inside the VM and figure out how many fake cores do you need and where do you need to put them.
+- Try to match the L3 cache core assignments by adding fake cores that won't be enabled. Take a look at my code bellow and pay attention to ``vcpu``s with ``enabled="no"``. Those are fake cores that will be disabled, but are present so the assignment of cores per L3 cache is correct. For this, you will need to use [Coreinfo](https://learn.microsoft.com/en-us/sysinternals/downloads/coreinfo) inside the VM and figure out how many fake cores do you need and where do you need to put them.
 	
-		- <details>
-			<summary>The code for my setup</summary>
-			
-			```
-			<vcpu placement="static" current="20">26</vcpu>
-			<vcpus>
-			  <vcpu id="0" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="1" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="2" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="3" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="4" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="5" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="6" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="7" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="8" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="9" enabled="yes" hotpluggable="no"/>
-			  <vcpu id="10" enabled="no" hotpluggable="yes"/>
-			  <vcpu id="11" enabled="no" hotpluggable="yes"/>
-			  <vcpu id="12" enabled="no" hotpluggable="yes"/>
-			  <vcpu id="13" enabled="no" hotpluggable="yes"/>
-			  <vcpu id="14" enabled="no" hotpluggable="yes"/>
-			  <vcpu id="15" enabled="no" hotpluggable="yes"/>
-			  <vcpu id="16" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="17" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="18" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="19" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="20" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="21" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="22" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="23" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="24" enabled="yes" hotpluggable="yes"/>
-			  <vcpu id="25" enabled="yes" hotpluggable="yes"/>
-			</vcpus>
-			<cputune>
-			  <vcpupin vcpu="0" cpuset="1"/>
-			  <vcpupin vcpu="1" cpuset="13"/>
-			  <vcpupin vcpu="2" cpuset="2"/>
-			  <vcpupin vcpu="3" cpuset="14"/>
-			  <vcpupin vcpu="4" cpuset="3"/>
-			  <vcpupin vcpu="5" cpuset="15"/>
-			  <vcpupin vcpu="6" cpuset="4"/>
-			  <vcpupin vcpu="7" cpuset="16"/>
-			  <vcpupin vcpu="8" cpuset="5"/>
-			  <vcpupin vcpu="9" cpuset="17"/>
-			  <vcpupin vcpu="16" cpuset="7"/>
-			  <vcpupin vcpu="17" cpuset="19"/>
-			  <vcpupin vcpu="18" cpuset="8"/>
-			  <vcpupin vcpu="19" cpuset="20"/>
-			  <vcpupin vcpu="20" cpuset="9"/>
-			  <vcpupin vcpu="21" cpuset="21"/>
-			  <vcpupin vcpu="22" cpuset="10"/>
-			  <vcpupin vcpu="23" cpuset="22"/>
-			  <vcpupin vcpu="24" cpuset="11"/>
-			  <vcpupin vcpu="25" cpuset="23"/>
-			  <emulatorpin cpuset="0,6,12,18"/>
-			</cputune>
-			```
+- <details>
+	<summary>The code for my setup</summary>
 	
-		</details>
-	
-	- Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM. For my setup, it looks like this:
-	
-		```
-		<cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
-			<!-- 13c/26t because 3c/6t are disabled and 10c/20t are used to match the proper L3 cache placement -->
-		    <topology sockets='1' dies='1' cores='13' threads='2'/>
-		    <cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
-		    <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
-		    <feature policy='require' name='svm'/>
-		    <feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
-		    <feature policy='require' name='hypervisor'/>
-		    <feature policy='require' name='invtsc'/>
-		  </cpu>  
-		```
-    
-    
-* CPU Governor
+	```
+	<vcpu placement="static" current="20">26</vcpu>
+	<vcpus>
+		<vcpu id="0" enabled="yes" hotpluggable="no"/>
+		<vcpu id="1" enabled="yes" hotpluggable="no"/>
+		<vcpu id="2" enabled="yes" hotpluggable="no"/>
+		<vcpu id="3" enabled="yes" hotpluggable="no"/>
+		<vcpu id="4" enabled="yes" hotpluggable="no"/>
+		<vcpu id="5" enabled="yes" hotpluggable="no"/>
+		<vcpu id="6" enabled="yes" hotpluggable="no"/>
+		<vcpu id="7" enabled="yes" hotpluggable="no"/>
+		<vcpu id="8" enabled="yes" hotpluggable="no"/>
+		<vcpu id="9" enabled="yes" hotpluggable="no"/>
+		<vcpu id="10" enabled="no" hotpluggable="yes"/>
+		<vcpu id="11" enabled="no" hotpluggable="yes"/>
+		<vcpu id="12" enabled="no" hotpluggable="yes"/>
+		<vcpu id="13" enabled="no" hotpluggable="yes"/>
+		<vcpu id="14" enabled="no" hotpluggable="yes"/>
+		<vcpu id="15" enabled="no" hotpluggable="yes"/>
+		<vcpu id="16" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="17" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="18" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="19" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="20" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="21" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="22" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="23" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="24" enabled="yes" hotpluggable="yes"/>
+		<vcpu id="25" enabled="yes" hotpluggable="yes"/>
+	</vcpus>
+	<cputune>
+		<vcpupin vcpu="0" cpuset="1"/>
+		<vcpupin vcpu="1" cpuset="13"/>
+		<vcpupin vcpu="2" cpuset="2"/>
+		<vcpupin vcpu="3" cpuset="14"/>
+		<vcpupin vcpu="4" cpuset="3"/>
+		<vcpupin vcpu="5" cpuset="15"/>
+		<vcpupin vcpu="6" cpuset="4"/>
+		<vcpupin vcpu="7" cpuset="16"/>
+		<vcpupin vcpu="8" cpuset="5"/>
+		<vcpupin vcpu="9" cpuset="17"/>
+		<vcpupin vcpu="16" cpuset="7"/>
+		<vcpupin vcpu="17" cpuset="19"/>
+		<vcpupin vcpu="18" cpuset="8"/>
+		<vcpupin vcpu="19" cpuset="20"/>
+		<vcpupin vcpu="20" cpuset="9"/>
+		<vcpupin vcpu="21" cpuset="21"/>
+		<vcpupin vcpu="22" cpuset="10"/>
+		<vcpupin vcpu="23" cpuset="22"/>
+		<vcpupin vcpu="24" cpuset="11"/>
+		<vcpupin vcpu="25" cpuset="23"/>
+		<emulatorpin cpuset="0,6,12,18"/>
+	</cputune>
+	```
 
-	This tweak takes advantage of the [CPU frequency scaling governor](https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors). 
-	
-	My CPU uses ``powersave`` as the default governor. Please check which is the default for your CPU by running the following command in the terminal: 
-	```
-	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-	``` 
-	
-	Update the ``cpu_mode_release.sh`` located in ``hooks/win11/release/end`` and replace ``powersave`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
-	```
-	sudo ./setup_cpu_governor_hooks.sh
-	```
-	
-	The file tree should look similar to this now:
-	
-	```
-	$ tree /etc/libvirt/hooks/
-	/etc/libvirt/hooks/
-	├── qemu
-    └── {name of your VM}
-        ├── prepare
-  	    │   └── begin
-        │       ├── ...
-        │       └── cpu_mode_performance.sh
- 	    └── release
-            └── end
-	            ├── ...
-	            └── cpu_mode_release.sh
-	```
-	
-	
-* CPU passthrough mode
-	
-	- This might not work as expected, as for me the latency improved but the L3 cache size changed from 32MB to 16MB, so I ended up not using this.
-	- To check the cache latency, use AIDA64 Memory & Cache benchmarks (Tools->Memory & Cache benchmarks).
-	- Also check your cache topology and size inside the VM using [Coreinfo](https://learn.microsoft.com/en-us/sysinternals/downloads/coreinfo)
-	- This does not necessarily improve your performance, so please benchmark before and after to see which is better.
-	- We can improve cache latency by changing from ``<cpu mode="host-passthrough">`` to a custom mode that better matches your CPU.
-		1) To get a detailed info about your CPU, run ``virsh capabilities`` inside your terminal, look for ``<arch>x86_64</arch>`` and under that arch look for ``<model>``. This is the model we are going to use inside our VM setup.
-		
-		   ![virsh capabilities model](./images/virsh%20capabilities%20model.png)
-		
-		2) Go to VM settings, CPU, uncheck the ``Copy host CPU configuration`` and select the model you got from the previous step in the drop down menu.
-		
-		   ![CPU model select](./images/CPU%20model%20select.png)
-		
-		3) You will have to remove the ``<cache mode="passthrough"/>`` option from the ``<cpu>`` inside your XML for this to work. You can try ``<cache level="3" mode="emulate"/>`` and see if that improves the performance over having no ``cache`` option. For me, it didn't make a difference in latency benchmarks so I removed it, but that might not be the case for you, so benchmark it.
-		
-		   ![remove cache](./images/remove%20cache.png)
-    
-    
-* Line-Based vs. Message Signaled-Based Interrupts (MSI)
-  
-  - This can sometimes help with audio stutters and cracks.
-  - TL/DR: With this you can switch from Line-Based to MSI for improved interrupts handling which should improve audio stutters and cracks and some potential VM crashes related to interrupts.
-  - Take a look at [this](https://forums.guru3d.com/threads/windows-line-based-vs-message-signaled-based-interrupts-msi-tool.378044/) detailed guide. I used MSI Utility V3 from the link in the post to switch to MSI
-  
-  
-* Internet improvements
+</details>
 
-  - Follow [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Virtio_network) link to possibly improve internet performance.
-  - TL/DR: Set the network device as in the following picture. You will need the `NetKVM` driver for the ethernet controller inside the VM found in [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/) file.
+- Make sure to update the ``<cpu>`` topology to match the number of cores and threads you are passing to the VM. For my setup, it looks like this:
+
+	```
+	<cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
+		<!-- 13c/26t because 3c/6t are disabled and 10c/20t are used to match the proper L3 cache placement -->
+		<topology sockets='1' dies='1' cores='13' threads='2'/>
+		<cache mode='passthrough'/>                     <!-- The real CPU cache data reported by the host CPU will be passed through to the virtual CPU -->
+		<feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
+		<feature policy='require' name='svm'/>
+		<feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
+		<feature policy='require' name='hypervisor'/>
+		<feature policy='require' name='invtsc'/>
+	</cpu>  
+	```
+
+
+#### CPU Governor
+
+This tweak takes advantage of the [CPU frequency scaling governor](https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors). 
+
+My CPU uses ``powersave`` as the default governor. Please check which is the default for your CPU by running the following command in the terminal: 
+```
+cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+``` 
+
+Update the ``cpu_mode_release.sh`` located in ``hooks/win11/release/end`` and replace ``powersave`` with your default governor. Also rename the ``win11`` folder to the the name of your VM and then run:
+```
+sudo ./setup_cpu_governor_hooks.sh
+```
+
+The file tree should look similar to this now:
+
+```
+$ tree /etc/libvirt/hooks/
+/etc/libvirt/hooks/
+├── qemu
+└── {name of your VM}
+	├── prepare
+	│   └── begin
+	│       ├── ...
+	│       └── cpu_mode_performance.sh
+	└── release
+		└── end
+			├── ...
+			└── cpu_mode_release.sh
+```
+	
+	
+#### CPU passthrough mode
+	
+- This might not work as expected, as for me the latency improved but the L3 cache size changed from 32MB to 16MB, so I ended up not using this.
+- To check the cache latency, use AIDA64 Memory & Cache benchmarks (Tools->Memory & Cache benchmarks).
+- Also check your cache topology and size inside the VM using [Coreinfo](https://learn.microsoft.com/en-us/sysinternals/downloads/coreinfo)
+- This does not necessarily improve your performance, so please benchmark before and after to see which is better.
+- We can improve cache latency by changing from ``<cpu mode="host-passthrough">`` to a custom mode that better matches your CPU.
+	1) To get a detailed info about your CPU, run ``virsh capabilities`` inside your terminal, look for ``<arch>x86_64</arch>`` and under that arch look for ``<model>``. This is the model we are going to use inside our VM setup.
+	
+		![virsh capabilities model](./images/virsh%20capabilities%20model.png)
+	
+	2) Go to VM settings, CPU, uncheck the ``Copy host CPU configuration`` and select the model you got from the previous step in the drop down menu.
+	
+		![CPU model select](./images/CPU%20model%20select.png)
+	
+	3) You will have to remove the ``<cache mode="passthrough"/>`` option from the ``<cpu>`` inside your XML for this to work. You can try ``<cache level="3" mode="emulate"/>`` and see if that improves the performance over having no ``cache`` option. For me, it didn't make a difference in latency benchmarks so I removed it, but that might not be the case for you, so benchmark it.
+	
+		![remove cache](./images/remove%20cache.png)
+
+
+#### Line-Based vs. Message Signaled-Based Interrupts (MSI)
   
-  	![Internet setup](./images/Internet%20setup.png)
-    
-    
+- This can sometimes help with audio stutters and cracks.
+- TL/DR: With this you can switch from Line-Based to MSI for improved interrupts handling which should improve audio stutters and cracks and some potential VM crashes related to interrupts.
+- Take a look at [this](https://forums.guru3d.com/threads/windows-line-based-vs-message-signaled-based-interrupts-msi-tool.378044/) detailed guide. I used MSI Utility V3 from the link in the post to switch to MSI
+
+
+#### Internet improvements
+
+- Follow [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Virtio_network) link to possibly improve internet performance.
+- TL/DR: Set the network device as in the following picture. You will need the `NetKVM` driver for the ethernet controller inside the VM found in [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/) file.
+
+![Internet setup](./images/Internet%20setup.png)
+
+
 ### Logging
 
 * Check all hook logs with ```sudo cat /dev/kmsg | grep libvirt-qemu```

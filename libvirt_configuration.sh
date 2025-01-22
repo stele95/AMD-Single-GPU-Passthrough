@@ -2,7 +2,7 @@ echo "This will install and configure libvirt."
 sleep 1s
 sudo pacman -S --needed libvirt libvirt-glib libvirt-python virt-install virt-manager qemu-desktop ovmf vde2 ebtables dnsmasq bridge-utils openbsd-netcat iptables-nft swtpm
 sleep 1s
-echo "Editting libvirtd.conf"
+echo "Editing libvirtd.conf"
 echo "mv /etc/libvirt/libvirtd.conf /etc/libvirt/libvirtd.conf.old"
 sudo mv /etc/libvirt/libvirtd.conf /etc/libvirt/libvirtd.conf.old
 sleep 1s
@@ -13,7 +13,7 @@ echo "cp libvirtd.conf /etc/libvirt"
 sudo cp libvirtd.conf /etc/libvirt
 sudo sleep 1s
 echo "libvirt has been successfully configured!"
-echo "Editting QEMU configs"
+echo "Editing QEMU configs"
 sleep 2s
 echo "mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old"
 sudo mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old
