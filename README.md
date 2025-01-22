@@ -25,6 +25,11 @@
 * [Passthrough (virt-manager)](#passthrough-virt-manager)
 * [Final checks](#final-checks)
 * [Improving VM and CPU performance](#improving-vm-and-cpu-performance)
+	* [CPU pinning](#cpu-pinning)
+	* [CPU Governor](#cpu-governor)
+	* [CPU passthrough mode](#cpu-passthrough-mode)
+	* [Line-Based vs. Message Signaled-Based Interrupts (MSI)](#line-based-vs-message-signaled-based-interrupts-msi)
+	* [Internet improvements](#internet-improvements)
 * [Logging](#logging)
 
 ### Preparations
@@ -415,7 +420,7 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
 		<feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
 		<feature policy='require' name='hypervisor'/>
 		<feature policy='require' name='invtsc'/>
-		</cpu>  
+	</cpu>  
 	```
 
 
