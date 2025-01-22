@@ -346,7 +346,7 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
 	</cache>
 	```
 	
-- Try to match the L3 cache core assignments by adding fake cores that won't be enabled. Take a look at my code bellow and pay attention to ``vcpu``s with ``enabled="no"``. Those are fake cores that will be disabled, but are present so the assignment of cores per L3 cache is correct. For this, you will need to use ``CoreInfo`` inside the VM and figure out how many fake cores do you need and where do you need to put them.
+- Try to match the L3 cache core assignments by adding fake cores that won't be enabled. Take a look at my code bellow and pay attention to ``vcpu``s with ``enabled="no"``. Those are fake cores that will be disabled, but are present so the assignment of cores per L3 cache is correct. For this, you will need to use [Coreinfo](https://learn.microsoft.com/en-us/sysinternals/downloads/coreinfo) inside the VM and figure out how many fake cores do you need and where do you need to put them.
 	
 - <details>
 	<summary>The code for my setup</summary>
