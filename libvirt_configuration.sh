@@ -15,6 +15,7 @@ sudo sleep 1s
 echo "libvirt has been successfully configured!"
 echo "Editing QEMU configs"
 sleep 2s
+sed -i "s/user = \"stele\"/user = \"$USER\"/g" qemu.conf
 echo "mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old"
 sudo mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old
 sleep 1s
