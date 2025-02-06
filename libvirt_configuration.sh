@@ -15,6 +15,7 @@ sudo sleep 1s
 echo "libvirt has been successfully configured!"
 echo "Editing QEMU configs"
 sleep 2s
+sed -i "s/user = \"stele\"/user = \"$USER\"/g" qemu.conf
 echo "mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old"
 sudo mv /etc/libvirt/qemu.conf /etc/libvirt/qemu.conf.old
 sleep 1s
@@ -24,5 +25,11 @@ sleep 1s
 echo "systemctl enable --now libvirtd"
 sudo systemctl enable --now libvirtd
 echo "QEMU has been successfully configured!"
-sleep 3s
+echo "Press y to reboot now or n to reboot later. y is the default option"
+read REBOOT
+
+if [ $REBOOT = "y" ]
+        then
+                reboot
+fi
 exit

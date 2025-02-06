@@ -15,10 +15,10 @@ grub-mkconfig -o /boot/grub/grub.cfg
 sleep 5s      
 echo
 echo "Grub bootloader has been modified successfully"
-echo "Press Y to reboot now or n to reboot later. Y is the default option"
+echo "Press y to reboot now or n to reboot later. y is the default option"
 read REBOOT
 
-if [ $REBOOT = "Y" ]
+if [ $REBOOT = "y" ]
         then
                 reboot
 fi
