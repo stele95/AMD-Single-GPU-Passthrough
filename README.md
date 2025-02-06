@@ -16,7 +16,7 @@
 
 ### Table of contents
 * [Preparations](#preparations)
-* [Preparing GRUB](#preparing-grub)
+* [Preparing boot](#preparing-boot)
 * [Configuring Libvirt](#configuring-libvirt)
 * [Setting up Windows VM](#setting-up-windows-vm)
 * [Hook scripts](#hook-scripts)
@@ -35,6 +35,8 @@
 
 ### Preparations
 
+All scripts in this guide are written for Arch-based systems. If you are not on an Arch-based system, follow the scripts and execute commands appropriate for your OS.
+
 To prepare, make sure you have virtualization features enabled in your BIOS.
 
 * For AMD enable
@@ -52,10 +54,17 @@ To prepare, make sure you have virtualization features enabled in your BIOS.
 	git clone https://github.com/stele95/AMD-Single-GPU-Passthrough && cd AMD-Single-GPU-Passthrough
 	```
 
+### Preparing boot
 
-### Preparing GRUB
+If you are using GRUB, run the appropriate script based on your cpu:
+    - AMD: ``sudo ./grub_setup_amd.sh`` 
+    - Intel: ``sudo ./grub_setup_intel.sh``
+    
+If you are using other boot systems (systemd-boot, etc), scripts will not work. You will have to manually add the following to the kernel parameters:
+	- AMD: ``amd_iommu=on iommu=pt video=efifb:off``
+	- Intel: ``intel_iommu=on iommu=pt``
 
-Preparing GRUB is very simple.
+#### Preparing GRUB
 
 * Run the appropriate script based on your cpu:
     - AMD: ``sudo ./grub_setup_amd.sh`` 
@@ -64,7 +73,7 @@ Preparing GRUB is very simple.
 
 ### Configuring Libvirt
 
-To configure libvirt run the script which configures libvirt and QEMU by typing ``./libvirt_configuration.sh``.
+To configure libvirt run the script which configures libvirt and QEMU by typing ``./libvirt_configuration.sh``. Restart the PC after the script finishes.
 
 
 ### Setting up Windows VM
@@ -209,7 +218,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 There is an amazing hook script made by @risingprismtv on gitlab. What this script does is stop your display manager service and all of your running programs, and unhooks your graphics card off of Linux and rehooks it onto the Windows VM.
 
 1) Clone Risngprism's single GPU passthrough gitlab page: ``git clone https://gitlab.com/risingprismtv/single-gpu-passthrough && cd single-gpu-passthrough``.
-2) Run the install script as sudo: ``sudo ./install-hooks.sh``.
+2) Run the install script as sudo: ``sudo ./install_hooks.sh``.
 3) The scripts will successfully install into their required places without issue!
 
 
