@@ -64,12 +64,6 @@ If you are using other boot systems (systemd-boot, etc), scripts will not work. 
 	- AMD: ``amd_iommu=on iommu=pt video=efifb:off``
 	- Intel: ``intel_iommu=on iommu=pt``
 
-#### Preparing GRUB
-
-* Run the appropriate script based on your cpu:
-    - AMD: ``sudo ./grub_setup_amd.sh`` 
-    - Intel: ``sudo ./grub_setup_intel.sh``
-
 
 ### Configuring Libvirt
 
