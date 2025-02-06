@@ -57,12 +57,12 @@ To prepare, make sure you have virtualization features enabled in your BIOS.
 ### Preparing boot
 
 If you are using GRUB, run the appropriate script based on your cpu:
-    - AMD: ``sudo ./grub_setup_amd.sh`` 
-    - Intel: ``sudo ./grub_setup_intel.sh``
+  - AMD: ``sudo ./grub_setup_amd.sh`` 
+  - Intel: ``sudo ./grub_setup_intel.sh``
     
 If you are using other boot systems (systemd-boot, etc), scripts will not work. You will have to manually add the following to the kernel parameters:
-	- AMD: ``amd_iommu=on iommu=pt video=efifb:off``
-	- Intel: ``intel_iommu=on iommu=pt``
+  - AMD: ``amd_iommu=on iommu=pt video=efifb:off``
+  - Intel: ``intel_iommu=on iommu=pt``
 
 
 ### Configuring Libvirt
