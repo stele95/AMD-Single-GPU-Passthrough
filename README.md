@@ -30,6 +30,7 @@
 	* [CPU passthrough mode](#cpu-passthrough-mode)
 	* [Line-Based vs. Message Signaled-Based Interrupts (MSI)](#line-based-vs-message-signaled-based-interrupts-msi)
 	* [Internet improvements](#internet-improvements)
+* [EAC games detecting VM](#eac-games-detecting-vm)
 * [Logging](#logging)
 
 ### Preparations
@@ -489,6 +490,14 @@ $ tree /etc/libvirt/hooks/
 - TL/DR: Set the network device as in the following picture. You will need the `NetKVM` driver for the ethernet controller inside the VM found in [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/) file.
 
 ![Internet setup](./images/Internet%20setup.png)
+
+
+### EAC games detecting VM
+
+Some games that use EAC might detect that Windows is running inside a VM. To try and fix that, enter the following line inside the `<os>` section in your XML config file for the VM:
+```
+<smbios mode="host"/>
+```
 
 
 ### Logging
