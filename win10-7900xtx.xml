@@ -6,8 +6,8 @@
             <libosinfo:os id="http://microsoft.com/win/10"/>
         </libosinfo:libosinfo>
     </metadata>
-    <memory unit="KiB">25165824</memory>
-    <currentMemory unit="KiB">25165824</currentMemory>
+    <memory unit="KiB">28672000</memory>
+    <currentMemory unit="KiB">28672000</currentMemory>
     <vcpu placement="static" current="20">26</vcpu>
     <vcpus>
         <vcpu id="0" enabled="yes" hotpluggable="no"/>
@@ -69,6 +69,7 @@
         <loader readonly="yes" secure="yes" type="pflash" format="raw">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd</loader>
         <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd" templateFormat="raw" format="raw">/var/lib/libvirt/qemu/nvram/win10_VARS.fd</nvram>
         <boot dev="hd"/>
+        <smbios mode="host"/>
     </os>
     <features>
         <acpi/>
@@ -126,7 +127,7 @@
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type="file" device="disk">
             <driver name="qemu" type="qcow2"/>
-            <source file="/mnt/games_partition/win10.qcow2"/>
+            <source file="/mnt/games/win10.qcow2"/>
             <target dev="sda" bus="sata"/>
             <address type="drive" controller="0" bus="0" target="0" unit="0"/>
         </disk>
