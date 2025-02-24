@@ -502,6 +502,7 @@ Some games that use EAC might detect that Windows is running inside a VM. To try
 <smbios mode="host"/>
 ```
 
+Make sure you have ```dmidecode``` installed
 
 ### Logging
 
