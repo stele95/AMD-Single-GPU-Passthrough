@@ -4,6 +4,12 @@ if [ $EUID -ne 0 ]
                 exit 1
 fi
 
+if [ ! -f "/etc/default/grub" ]
+        then
+                echo "Grub not detected. You are probably using another bootloader."
+                exit 1
+fi
+
 echo "This script will configure your grub config for virtualization."
 
 GRUB=`cat /etc/default/grub | grep "GRUB_CMDLINE_LINUX_DEFAULT" | rev | cut -c 2- | rev`
@@ -15,7 +21,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 sleep 5s      
 echo
 echo "Grub bootloader has been modified successfully"
-echo "Press y to reboot now or n to reboot later. y is the default option"
+echo "Press y to reboot now or n to reboot later. n is the default option"
 read REBOOT
 
 if [ "$REBOOT" = "y" ]
