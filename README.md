@@ -75,7 +75,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 
 * Open the virt-manager and prepare Windows iso, I used ``sata`` and ``qcow2`` for the disk type. For Windows 11, you need to have over 54 GB of storage space.
 
-* You can use `virtio` disks for supposedly improved performance, but for me regular `sata` felt like it works better. You can read more about it [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Virtio_disk) and you'll need drivers from [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/).
+* You can use `virtio` disks for improved performance, but regular `sata` works fine for initial setup. You can read more about it [here](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Virtio_disk) and you'll need drivers from [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/).
 
 * Use the ``Q35`` chipset and ``x64/OVMF_CODE.secboot.4m.fd`` bootloader.
     

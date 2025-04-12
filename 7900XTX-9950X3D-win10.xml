@@ -1,6 +1,6 @@
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
     <name>win10</name>
-    <uuid>aded018c-fc0c-47c9-8aab-07f7009d9ede</uuid>
+    <uuid>a4390d88-dd62-4599-8fa0-635df30bbf2e</uuid>
     <metadata>
         <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
             <libosinfo:os id="http://microsoft.com/win/10"/>
@@ -27,6 +27,7 @@
         <vcpu id="14" enabled="yes" hotpluggable="no"/>
         <vcpu id="15" enabled="yes" hotpluggable="no"/>
     </vcpus>
+    <iothreads>3</iothreads>
     <cputune>
         <vcpupin vcpu="0" cpuset="0"/>
         <vcpupin vcpu="1" cpuset="16"/>
@@ -45,6 +46,9 @@
         <vcpupin vcpu="14" cpuset="7"/>
         <vcpupin vcpu="15" cpuset="23"/>
         <emulatorpin cpuset="8-9,24-25"/>
+        <iothreadpin iothread="1" cpuset="10,26"/>
+        <iothreadpin iothread="2" cpuset="11,27"/>
+        <iothreadpin iothread="3" cpuset="12,28"/>
     </cputune>
     <os firmware="efi">
         <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
@@ -54,7 +58,6 @@
         </firmware>
         <loader readonly="yes" secure="yes" type="pflash" format="raw">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd</loader>
         <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd" templateFormat="raw" format="raw">/var/lib/libvirt/qemu/nvram/win10_VARS.fd</nvram>
-        <boot dev="hd"/>
         <smbios mode="host"/>
     </os>
     <features>
@@ -112,16 +115,23 @@
     <devices>
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type="file" device="disk">
-            <driver name="qemu" type="qcow2"/>
-            <source file="/mnt/games/win10.qcow2"/>
-            <target dev="sda" bus="sata"/>
-            <address type="drive" controller="0" bus="0" target="0" unit="0"/>
+            <driver name="qemu" type="qcow2" iothread="1"/>
+            <source file="/mnt/games_partition/win10games.qcow2"/>
+            <target dev="vda" bus="virtio"/>
+            <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
         </disk>
         <disk type="file" device="disk">
-            <driver name="qemu" type="qcow2"/>
-            <source file="/mnt/games_partition/win10games.qcow2"/>
-            <target dev="sdb" bus="sata"/>
-            <address type="drive" controller="0" bus="0" target="0" unit="1"/>
+            <driver name="qemu" type="qcow2" iothread="2"/>
+            <source file="/mnt/adata/win10recordings.qcow2"/>
+            <target dev="vdb" bus="virtio"/>
+            <address type="pci" domain="0x0000" bus="0x08" slot="0x00" function="0x0"/>
+        </disk>
+        <disk type="file" device="disk">
+            <driver name="qemu" type="qcow2" iothread="3"/>
+            <source file="/mnt/games/win10.qcow2"/>
+            <target dev="vdc" bus="virtio"/>
+            <boot order="1"/>
+            <address type="pci" domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
         </disk>
         <controller type="pci" index="0" model="pcie-root"/>
         <controller type="pci" index="1" model="pcie-root-port">
@@ -216,14 +226,14 @@
             <source>
                 <address domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
             </source>
-            <rom bar="off" file="/var/lib/libvirt/vbios/gpu.rom"/>
+            <rom bar="off"/>
             <address type="pci" domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
         </hostdev>
         <hostdev mode="subsystem" type="pci" managed="yes">
             <source>
                 <address domain="0x0000" bus="0x03" slot="0x00" function="0x1"/>
             </source>
-            <rom bar="off" file="/var/lib/libvirt/vbios/gpu.rom"/>
+            <rom bar="off"/>
             <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
         </hostdev>
         <hostdev mode="subsystem" type="usb" managed="yes">
