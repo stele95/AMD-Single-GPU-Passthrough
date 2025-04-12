@@ -21,6 +21,7 @@
 * [Setting up Windows VM](#setting-up-windows-vm)
 * [Hook scripts](#hook-scripts)
 	* [Editing hooks](#editing-hooks)
+* [GPU not resetting properly](#gpu-not-resetting-properly)
 * [Export GPU ROM](#export-gpu-rom)
 * [Passthrough (virt-manager)](#passthrough-virt-manager)
 * [Final checks](#final-checks)
@@ -226,7 +227,15 @@ There is an amazing hook script made by @risingprismtv on gitlab. What this scri
 3) Now you should be good to turn on your VM! On Windows drivers will auto install.
 
 
-### Export GPU ROM (Mandatory for 7900XTX, optional for older GPUs if the VM is not starting or shutting down properly)
+### GPU not resetting properly
+
+After setting everything up, you just get a black screen once you start your VM and the GPU fans speed up, or your VM shut down doesn't return you to the host login screen, check logs at `/var/log/libvirt/qemu/{VM name}.log` for a  `vfio: Cannot reset device {gpu device id}, no available reset mechanism.`.
+If you have that error, add `rtcwake -m mem -s 3` at the end of the `/usr/local/bin/vfio-startup` script and at the start of the `/usr/local/bin/vfio-teardown` script.
+
+
+### Export GPU ROM
+
+This step is optional, try it if the VM is not starting or shutting down properly.
 
 The best way is to extract it from Windows using GPU-Z and copy that file to ``/var/lib/libvirt/vbios/``. In case you don't have access to Windows installation, try the following steps:
 
