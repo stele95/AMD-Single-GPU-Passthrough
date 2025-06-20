@@ -24,6 +24,7 @@
 * [GPU not resetting properly](#gpu-not-resetting-properly)
 * [Export GPU ROM](#export-gpu-rom)
 * [Passthrough (virt-manager)](#passthrough-virt-manager)
+	* [USB controllers passthrough](#usb-controllers-passthrough)
 * [Final checks](#final-checks)
 * [Improving VM and CPU performance](#improving-vm-and-cpu-performance)
 	* [CPU pinning](#cpu-pinning)
@@ -314,6 +315,13 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
   ``` 
   
   Also, for 7900XTX, make sure to disable Resize BAR in your BIOS and in the Virtual Manager (ROM BAR option on the PCI Device)
+  
+
+#### USB controllers passthrough
+
+For a proper passthrough of USB controllers, make sure that you only select controllers that are in isolated IOMMU groups (there are no other controllers/devices in the same group, PCI bridge devices in the same group don't count as devices/controllers).
+To check your IOMMU groups, follow [this guide](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Ensuring_that_the_groups_are_valid).
+If you want to make sure that nothing important is attached to the controllers that you want to passthrough (BIOS LED controller or something similar), use the addresses from the IOMMU groups to check if there are some USB devices attached to those addresses by running `sudo dmesg | grep -i usb`
 
 
 ### Final checks

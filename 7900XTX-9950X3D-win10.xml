@@ -226,36 +226,15 @@
             <source>
                 <address domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
             </source>
-            <rom bar="off"/>
+            <rom bar="off" file="/var/lib/libvirt/vbios/gpu.rom"/>
             <address type="pci" domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
         </hostdev>
         <hostdev mode="subsystem" type="pci" managed="yes">
             <source>
                 <address domain="0x0000" bus="0x03" slot="0x00" function="0x1"/>
             </source>
-            <rom bar="off"/>
+            <rom bar="off" file="/var/lib/libvirt/vbios/gpu.rom"/>
             <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
-        </hostdev>
-        <hostdev mode="subsystem" type="usb" managed="yes">
-            <source>
-                <vendor id="0x320f"/>
-                <product id="0x5088"/>
-            </source>
-            <address type="usb" bus="0" port="1"/>
-        </hostdev>
-        <hostdev mode="subsystem" type="usb" managed="yes">
-            <source>
-                <vendor id="0x046d"/>
-                <product id="0xc53a"/>
-            </source>
-            <address type="usb" bus="0" port="2"/>
-        </hostdev>
-        <hostdev mode="subsystem" type="pci" managed="yes">
-            <source>
-                <address domain="0x0000" bus="0x7a" slot="0x00" function="0x0"/>
-            </source>
-            <rom bar="off"/>
-            <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
         </hostdev>
         <hostdev mode="subsystem" type="pci" managed="yes">
             <source>
@@ -263,6 +242,34 @@
             </source>
             <rom bar="off"/>
             <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
+        </hostdev>
+        <hostdev mode="subsystem" type="pci" managed="yes">
+            <source>
+                <address domain="0x0000" bus="0x16" slot="0x00" function="0x0"/>
+            </source>
+            <rom bar="off"/>
+            <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
+        </hostdev>
+        <hostdev mode="subsystem" type="pci" managed="yes">
+            <source>
+                <address domain="0x0000" bus="0x7c" slot="0x00" function="0x4"/>
+            </source>
+            <rom bar="off"/>
+            <address type="pci" domain="0x0000" bus="0x0a" slot="0x00" function="0x0"/>
+        </hostdev>
+        <hostdev mode="subsystem" type="pci" managed="yes">
+            <source>
+                <address domain="0x0000" bus="0x7c" slot="0x00" function="0x3"/>
+            </source>
+            <rom bar="off"/>
+            <address type="pci" domain="0x0000" bus="0x0c" slot="0x00" function="0x0"/>
+        </hostdev>
+        <hostdev mode="subsystem" type="pci" managed="yes">
+            <source>
+                <address domain="0x0000" bus="0x7a" slot="0x00" function="0x0"/>
+            </source>
+            <rom bar="off"/>
+            <address type="pci" domain="0x0000" bus="0x0b" slot="0x00" function="0x0"/>
         </hostdev>
         <watchdog model="itco" action="reset"/>
         <memballoon model="none"/>
