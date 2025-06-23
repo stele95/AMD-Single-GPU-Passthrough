@@ -1,6 +1,8 @@
+#!/bin/bash
+set -e
 echo "This will install and configure libvirt."
 sleep 1s
-sudo pacman -S --needed libvirt libvirt-glib libvirt-python virt-install virt-manager qemu-desktop ovmf vde2 ebtables dnsmasq bridge-utils openbsd-netcat iptables-nft swtpm dmidecode
+sudo pacman -S --needed libvirt libvirt-glib libvirt-python virt-install virt-manager qemu-desktop ovmf vde2 ebtables dnsmasq bridge-utils openbsd-netcat swtpm dmidecode
 sleep 1s
 echo "Editing libvirtd.conf"
 echo "mv /etc/libvirt/libvirtd.conf /etc/libvirt/libvirtd.conf.old"
@@ -25,11 +27,10 @@ sleep 1s
 echo "systemctl enable --now libvirtd"
 sudo systemctl enable --now libvirtd
 echo "QEMU has been successfully configured!"
-echo "Press y to reboot now or n to reboot later. y is the default option"
+echo "Press y to reboot now or n to reboot later. n is the default option"
 read REBOOT
 
-if [ "$REBOOT" = "y" ]
-        then
-                reboot
+if [ "$REBOOT" = "y" ]; then
+        reboot
 fi
 exit
