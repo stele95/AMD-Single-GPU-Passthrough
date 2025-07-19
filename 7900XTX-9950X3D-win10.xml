@@ -1,6 +1,6 @@
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
     <name>win10</name>
-    <uuid>a4390d88-dd62-4599-8fa0-635df30bbf2e</uuid>
+    <uuid>14aadbdf-8758-4fdc-be91-dc16086a7813</uuid>
     <metadata>
         <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
             <libosinfo:os id="http://microsoft.com/win/10"/>
@@ -51,7 +51,7 @@
         <iothreadpin iothread="3" cpuset="12,28"/>
     </cputune>
     <os firmware="efi">
-        <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
+        <type arch="x86_64" machine="pc-q35-10.0">hvm</type>
         <firmware>
             <feature enabled="no" name="enrolled-keys"/>
             <feature enabled="yes" name="secure-boot"/>
@@ -118,21 +118,24 @@
             <driver name="qemu" type="qcow2" iothread="1"/>
             <source file="/mnt/games_partition/win10games.qcow2"/>
             <target dev="vda" bus="virtio"/>
-            <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
+            <address type="pci" domain="0x0000" bus="0x0a" slot="0x00" function="0x0"/>
         </disk>
         <disk type="file" device="disk">
             <driver name="qemu" type="qcow2" iothread="2"/>
             <source file="/mnt/adata/win10recordings.qcow2"/>
             <target dev="vdb" bus="virtio"/>
-            <address type="pci" domain="0x0000" bus="0x08" slot="0x00" function="0x0"/>
+            <address type="pci" domain="0x0000" bus="0x0b" slot="0x00" function="0x0"/>
         </disk>
         <disk type="file" device="disk">
             <driver name="qemu" type="qcow2" iothread="3"/>
             <source file="/mnt/games/win10.qcow2"/>
             <target dev="vdc" bus="virtio"/>
             <boot order="1"/>
-            <address type="pci" domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
+            <address type="pci" domain="0x0000" bus="0x0c" slot="0x00" function="0x0"/>
         </disk>
+        <controller type="usb" index="0" model="qemu-xhci" ports="15">
+            <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>
+        </controller>
         <controller type="pci" index="0" model="pcie-root"/>
         <controller type="pci" index="1" model="pcie-root-port">
             <model name="pcie-root-port"/>
@@ -207,20 +210,14 @@
         <controller type="sata" index="0">
             <address type="pci" domain="0x0000" bus="0x00" slot="0x1f" function="0x2"/>
         </controller>
-        <controller type="usb" index="0" model="qemu-xhci" ports="15">
-            <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>
-        </controller>
         <interface type="bridge">
-            <mac address="52:54:00:15:a1:1c"/>
+            <mac address="52:54:00:6b:f1:02"/>
             <source bridge="virbr0"/>
             <model type="virtio"/>
             <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
         </interface>
         <input type="mouse" bus="ps2"/>
         <input type="keyboard" bus="ps2"/>
-        <tpm model="tpm-tis">
-            <backend type="emulator" version="2.0"/>
-        </tpm>
         <audio id="1" type="none"/>
         <hostdev mode="subsystem" type="pci" managed="yes">
             <source>
@@ -238,13 +235,6 @@
         </hostdev>
         <hostdev mode="subsystem" type="pci" managed="yes">
             <source>
-                <address domain="0x0000" bus="0x7b" slot="0x00" function="0x0"/>
-            </source>
-            <rom bar="off"/>
-            <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
-        </hostdev>
-        <hostdev mode="subsystem" type="pci" managed="yes">
-            <source>
                 <address domain="0x0000" bus="0x16" slot="0x00" function="0x0"/>
             </source>
             <rom bar="off"/>
@@ -252,24 +242,31 @@
         </hostdev>
         <hostdev mode="subsystem" type="pci" managed="yes">
             <source>
-                <address domain="0x0000" bus="0x7c" slot="0x00" function="0x4"/>
+                <address domain="0x0000" bus="0x7a" slot="0x00" function="0x0"/>
             </source>
             <rom bar="off"/>
-            <address type="pci" domain="0x0000" bus="0x0a" slot="0x00" function="0x0"/>
+            <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
+        </hostdev>
+        <hostdev mode="subsystem" type="pci" managed="yes">
+            <source>
+                <address domain="0x0000" bus="0x7b" slot="0x00" function="0x0"/>
+            </source>
+            <rom bar="off"/>
+            <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
         </hostdev>
         <hostdev mode="subsystem" type="pci" managed="yes">
             <source>
                 <address domain="0x0000" bus="0x7c" slot="0x00" function="0x3"/>
             </source>
             <rom bar="off"/>
-            <address type="pci" domain="0x0000" bus="0x0c" slot="0x00" function="0x0"/>
+            <address type="pci" domain="0x0000" bus="0x08" slot="0x00" function="0x0"/>
         </hostdev>
         <hostdev mode="subsystem" type="pci" managed="yes">
             <source>
-                <address domain="0x0000" bus="0x7a" slot="0x00" function="0x0"/>
+                <address domain="0x0000" bus="0x7c" slot="0x00" function="0x4"/>
             </source>
             <rom bar="off"/>
-            <address type="pci" domain="0x0000" bus="0x0b" slot="0x00" function="0x0"/>
+            <address type="pci" domain="0x0000" bus="0x09" slot="0x00" function="0x0"/>
         </hostdev>
         <watchdog model="itco" action="reset"/>
         <memballoon model="none"/>
