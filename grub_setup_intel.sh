@@ -15,8 +15,9 @@ fi
 echo "This script will configure your grub config for virtualization."
 
 GRUB=`cat /etc/default/grub | grep "GRUB_CMDLINE_LINUX_DEFAULT" | rev | cut -c 2- | rev`
+GRUB_END=`cat /etc/default/grub | grep "GRUB_CMDLINE_LINUX_DEFAULT" | rev | cut -c 1`
 #adds amd_iommu=on and iommu=pt to the grub config
-GRUB+=" intel_iommu=on iommu=pt\""
+GRUB+=" intel_iommu=on iommu=pt$GRUB_END"
 sed -i -e "s|^GRUB_CMDLINE_LINUX_DEFAULT.*|${GRUB}|" /etc/default/grub
 
 grub-mkconfig -o /boot/grub/grub.cfg
