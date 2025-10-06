@@ -26,6 +26,7 @@
 * [Passthrough (virt-manager)](#passthrough-virt-manager)
 	* [USB controllers passthrough](#usb-controllers-passthrough)
 * [Final checks](#final-checks)
+* [Internet not available in the VM](#internet-not-available-in-the-VM)
 * [Improving VM and CPU performance](#improving-vm-and-cpu-performance)
 	* [CPU pinning](#cpu-pinning)
 	* [CPU Governor](#cpu-governor)
@@ -350,6 +351,11 @@ If you want to make sure that nothing important is attached to the controllers t
     ```
     
 * Check if CPU and RAM configurations are properly set
+
+
+### Internet not available in the VM
+
+If you are having problems with the internet access inside the VM where Windows says something like "Unidentified network" and "No internet", check [this link](https://bbs.archlinux.org/viewtopic.php?id=284664).
 
 
 ### Improving VM and CPU performance
