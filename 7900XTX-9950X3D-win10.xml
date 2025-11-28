@@ -1,6 +1,6 @@
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
     <name>win10</name>
-    <uuid>14aadbdf-8758-4fdc-be91-dc16086a7813</uuid>
+    <uuid>43d5b292-a525-4a67-9cf0-a97f210de3f8</uuid>
     <metadata>
         <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
             <libosinfo:os id="http://microsoft.com/win/10"/>
@@ -27,7 +27,6 @@
         <vcpu id="14" enabled="yes" hotpluggable="no"/>
         <vcpu id="15" enabled="yes" hotpluggable="no"/>
     </vcpus>
-    <iothreads>3</iothreads>
     <cputune>
         <vcpupin vcpu="0" cpuset="0"/>
         <vcpupin vcpu="1" cpuset="16"/>
@@ -46,10 +45,22 @@
         <vcpupin vcpu="14" cpuset="7"/>
         <vcpupin vcpu="15" cpuset="23"/>
         <emulatorpin cpuset="8-9,24-25"/>
-        <iothreadpin iothread="1" cpuset="10,26"/>
-        <iothreadpin iothread="2" cpuset="11,27"/>
-        <iothreadpin iothread="3" cpuset="12,28"/>
     </cputune>
+    <sysinfo type="smbios">
+        <bios>
+            <entry name="vendor">American Megatrends Inc.</entry>
+            <entry name="version">3.50</entry>
+            <entry name="date">09/18/2025</entry>
+        </bios>
+        <system>
+            <entry name="manufacturer">ASRock</entry>
+            <entry name="product">X870E Taichi</entry>
+            <entry name="version">Default string</entry>
+            <entry name="serial">Default string</entry>
+            <entry name="uuid">43d5b292-a525-4a67-9cf0-a97f210de3f8</entry>
+            <entry name="family">X870E</entry>
+        </system>
+    </sysinfo>
     <os firmware="efi">
         <type arch="x86_64" machine="pc-q35-10.0">hvm</type>
         <firmware>
@@ -58,7 +69,8 @@
         </firmware>
         <loader readonly="yes" secure="yes" type="pflash" format="raw">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd</loader>
         <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd" templateFormat="raw" format="raw">/var/lib/libvirt/qemu/nvram/win10_VARS.fd</nvram>
-        <smbios mode="host"/>
+        <boot dev="hd"/>
+        <smbios mode="sysinfo"/>
     </os>
     <features>
         <acpi/>
@@ -72,7 +84,7 @@
             <synic state="on"/>
             <stimer state="on"/>
             <reset state="on"/>
-            <vendor_id state="on" value="Asus"/>
+            <vendor_id state="on" value="AuthenticAMD"/>
             <frequencies state="on"/>
             <reenlightenment state="off"/>
             <tlbflush state="on"/>
@@ -94,7 +106,7 @@
         <feature policy="require" name="topoext"/>
         <feature policy="require" name="svm"/>
         <feature policy="require" name="apic"/>
-        <feature policy="require" name="hypervisor"/>
+        <feature policy="disable" name="hypervisor"/>
         <feature policy="require" name="invtsc"/>
     </cpu>
     <clock offset="localtime">
@@ -115,23 +127,16 @@
     <devices>
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type="file" device="disk">
-            <driver name="qemu" type="qcow2" iothread="1"/>
-            <source file="/mnt/games_partition/win10games.qcow2"/>
-            <target dev="vda" bus="virtio"/>
-            <address type="pci" domain="0x0000" bus="0x0a" slot="0x00" function="0x0"/>
+            <driver name="qemu" type="qcow2"/>
+            <source file="/mnt/gamesmain/win10.qcow2"/>
+            <target dev="sda" bus="sata"/>
+            <address type="drive" controller="0" bus="0" target="0" unit="0"/>
         </disk>
         <disk type="file" device="disk">
-            <driver name="qemu" type="qcow2" iothread="2"/>
-            <source file="/mnt/adata/win10recordings.qcow2"/>
-            <target dev="vdb" bus="virtio"/>
-            <address type="pci" domain="0x0000" bus="0x0b" slot="0x00" function="0x0"/>
-        </disk>
-        <disk type="file" device="disk">
-            <driver name="qemu" type="qcow2" iothread="3"/>
-            <source file="/mnt/games/win10.qcow2"/>
-            <target dev="vdc" bus="virtio"/>
-            <boot order="1"/>
-            <address type="pci" domain="0x0000" bus="0x0c" slot="0x00" function="0x0"/>
+            <driver name="qemu" type="qcow2"/>
+            <source file="/mnt/gamesopt/win10games.qcow2"/>
+            <target dev="sdb" bus="sata"/>
+            <address type="drive" controller="0" bus="0" target="0" unit="1"/>
         </disk>
         <controller type="usb" index="0" model="qemu-xhci" ports="15">
             <address type="pci" domain="0x0000" bus="0x02" slot="0x00" function="0x0"/>

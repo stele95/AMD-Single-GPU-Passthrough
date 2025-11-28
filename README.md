@@ -113,7 +113,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 		    <synic state='on'/>
 		    <stimer state='on'/>
 		    <reset state='on'/>
-		    <vendor_id state='on' value='Asus'/>  <!-- The value doesn't matter -->
+		    <vendor_id state='on' value='AuthenticAMD'/>  <!-- The value doesn't matter -->
 		    <frequencies state='on'/>
 		    <reenlightenment state='off'/>   <!-- We use only one guest. Not fully supported on KVM, disable it. -->
 		    <tlbflush state='on'/>
@@ -148,7 +148,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 		    <feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
 		    <feature policy='require' name='svm'/>
 		    <feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
-		    <feature policy='require' name='hypervisor'/>
+		    <feature policy='disable' name='hypervisor'/>
 		    <feature policy='require' name='invtsc'/>
 		  </cpu>                               
 		  ```
@@ -515,7 +515,28 @@ Some games that use EAC might detect that Windows is running inside a VM. To try
 <smbios mode="host"/>
 ```
 
-Make sure you have ```dmidecode``` installed
+Make sure you have ```dmidecode``` installed.
+
+If that doesn't work, change `<smbios mode="host"/>` to `<smbios mode="sysinfo"/>` and add the following before the `<os>` tag:
+```
+<sysinfo type="smbios">
+        <bios>
+            <entry name="vendor">American Megatrends Inc.</entry>
+            <entry name="version">3.50</entry>
+            <entry name="date">09/18/2025</entry>
+        </bios>
+        <system>
+            <entry name="manufacturer">ASRock</entry>
+            <entry name="product">X870E Taichi</entry>
+            <entry name="version">Default string</entry>
+            <entry name="serial">Default string</entry>
+            <entry name="uuid">43d5b292-a525-4a67-9cf0-a97f210de3f8</entry>
+            <entry name="family">X870E</entry>
+        </system>
+    </sysinfo>
+```
+
+Make sure that `<entry name="uuid">` value matches the `uuid` value of the VM, found inside the `<uuid>` tag at the start of the XML file. The rest should not matter, but you can match it with the info from running `sudo dmidecode` in the terminal.
 
 ### Logging
 
