@@ -1,16 +1,29 @@
 # AMD Single GPU Passthrough
 
 <details>
-  <summary>Hardware specifications at the point of writing this</summary>
+  <summary>Hardware specifications at the point of inital writing</summary>
 
     * Operating System: EndeavourOS
-    * DE: KDE Plasma 6
+    * DE: KDE Plasma
     * Graphics Platform: Wayland
     * GPU Drivers: Mesa/amdgpu
-    * Processors: AMD Ryzen 9 5900x
-    * Memory: 32 GiB of RAM
-    * Graphics Processor: AsRock 7900XTX Taichi
+    * Processors: AMD Ryzen 9 5900X
+    * Memory: 32 GB of RAM
+    * Graphics Processor: Sapphire Nitro R9 Fury
     * Motherboard: ASUS Tuf Gaming X570 Plus
+
+</details>
+<details>
+  <summary>Current hardware specifications</summary>
+
+    * Operating System: CachyOS
+    * DE: KDE Plasma
+    * Graphics Platform: Wayland
+    * GPU Drivers: Mesa/amdgpu
+    * Processors: AMD Ryzen 9 9950X3D
+    * Memory: 64 GB of RAM
+    * Graphics Processor: AsRock 7900XTX Taichi
+    * Motherboard: AsRock X870E Taichi
 
 </details>
 
@@ -25,6 +38,7 @@
 * [Export GPU ROM](#export-gpu-rom)
 * [Passthrough (virt-manager)](#passthrough-virt-manager)
 	* [USB controllers passthrough](#usb-controllers-passthrough)
+	* [Integrated BT adapter passthrough](#integrated-bt-adapter-passthrough)
 * [Final checks](#final-checks)
 * [Internet not available in the VM](#internet-not-available-in-the-VM)
 * [Improving VM and CPU performance](#improving-vm-and-cpu-performance)
@@ -229,32 +243,42 @@ If you have that error, add `rtcwake -m mem -s 3` at the end of the `/usr/local/
 
 This step is optional, try it if the VM is not starting or shutting down properly.
 
-The best way is to extract it from Windows using GPU-Z and copy that file to ``/var/lib/libvirt/vbios/``. In case you don't have access to Windows installation, try the following steps:
-
-1) Find your GPU's device ID: `lspci -vnn | grep '\[03'`. You should see some output such as the following; the first bit (`09:00.0` in this case) is the device ID.
-
-	```
-	09:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Fiji [Radeon R9 FURY / NANO Series] [1002:7300] (rev cb)
-	```
+* <details>
+	<summary>If you have Windows installed as dual boot</summary>
+	Extract it from Windows using [GPU-Z](https://www.techpowerup.com/gpuz/), rename it to `gpu.rom` and copy that file to `/var/lib/libvirt/vbios/`.
+  </details>
+  
+* <details>
+	<summary>If you don't have Windows installed as dual boot</summary>
+	Go to (VGA bios collection by TechPowerUp)[https://www.techpowerup.com/vgabios/] and find your GPU. This should show all available VBIOS versions.
+	If there are multiple VBIOS versions available, run `cat /sys/class/drm/card*/device/vbios_version` and check which VBIOS matches yours by going into details for all available VBIOS. The VBIOS version matching yours should be inside the `BIOS Internals` section. Download it, rename it to `gpu.rom` and copy that file to `/var/lib/libvirt/vbios/`.
 	
-2) Run `find /sys/devices -name rom` and ensure the device ID matches. For example looking at the case above, you'll want the last part before the `/rom` to be `09:00.0`, so you might see something like this (the extra `0000:` in front is fine):
+	In case you can't find it in the VGA bios collection, you can try these steps:
+		1) Find your GPU's device ID: `lspci -vnn | grep '\[03'`. You should see some output such as the following; the first bit (`09:00.0` in this case) is the device ID.
 
-	```
-	/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom
-	```
+			```
+			09:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Fiji [Radeon R9 FURY / NANO Series] [1002:7300] (rev cb)
+			```
 	
-3) For convenience's sake, let's call this PATH_TO_ROM. You can manually set this variable as well, by first becoming root (run `sudo su`) then running `export PATH_TO_ROM=/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom`
+		2) Run `find /sys/devices -name rom` and ensure the device ID matches. For example looking at the case above, you'll want the last part before the `/rom` to be `09:00.0`, so you might see something like this (the extra `0000:` in front is fine):
 
-4) Then, still as `root`, run the following commands:
-
-	```
-	echo 1 > $PATH_TO_ROM
-	mkdir -p /var/lib/libvirt/vbios/
-	cat $PATH_TO_ROM > /var/lib/libvirt/vbios/gpu.rom
-	echo 0 > $PATH_TO_ROM
-	```
+			```
+			/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom
+			```
 	
-5) Run `exit` to stop acting as `root`
+		3) For convenience's sake, let's call this PATH_TO_ROM. You can manually set this variable as well, by first becoming root (run `sudo su`) then running `export PATH_TO_ROM=/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom`
+
+		4) Then, still as `root`, run the following commands:
+
+			```
+			echo 1 > $PATH_TO_ROM
+			mkdir -p /var/lib/libvirt/vbios/
+			cat $PATH_TO_ROM > /var/lib/libvirt/vbios/gpu.rom
+			echo 0 > $PATH_TO_ROM
+			```
+			
+		5) Run `exit` to stop acting as `root`
+  </details>
 
 
 ### Passthrough (virt-manager)
@@ -296,7 +320,7 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
     Device model: e1000e (could be different name for you, it was first option)
     ```
 
-* If you need to export your GPU ROM, don't forget to add vbios.rom file inside the win11.xml (or whatever your VM's name is) for the GPU and HDMI host PCI devices, example:
+* If you need to export your GPU ROM, don't forget to add `gpu.rom` file inside the win11.xml (or whatever your VM's name is) for the GPU and HDMI host PCI devices, example:
   ```
     ...
     </source>
@@ -305,7 +329,7 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
     ...
   ``` 
   
-  Also, for 7900XTX, make sure to disable Resize BAR in your BIOS and in the Virtual Manager (ROM BAR option on the PCI Device)
+  Also, for 7900XTX GPU, make sure to disable Resize BAR in your BIOS and in the Virtual Manager (ROM BAR option on the PCI Device)
   
 
 #### USB controllers passthrough
@@ -313,6 +337,34 @@ The best way is to extract it from Windows using GPU-Z and copy that file to ``/
 For a proper passthrough of USB controllers, make sure that you only select controllers that are in isolated IOMMU groups (there are no other controllers/devices in the same group, PCI bridge devices in the same group don't count as devices/controllers).
 To check your IOMMU groups, follow [this guide](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Ensuring_that_the_groups_are_valid).
 If you want to make sure that nothing important is attached to the controllers that you want to passthrough (BIOS LED controller or something similar), use the addresses from the IOMMU groups to check if there are some USB devices attached to those addresses by running `sudo dmesg | grep -i usb`
+
+
+#### Integrated BT adapter passthrough
+
+The best way to passthrough a BT adapter is to add the USB Controller, which has the BT adapter attached to it, to the VM as a PCI device. But sometimes that is not possible because the USB controller is in the IOMMU group that is not viable for a passthrough. 
+In that case, for a proper passthrough of an integrated BT adapter (motherboards with integrated WiFi and BT), you can add the BT adapter as a usb device with some additional tweeks to the VM XML.
+
+* Add additional qemu capabilities after `</devices>`, but before `</domain>`
+  ```
+	</devices>
+	<qemu:capabilities>
+	  <qemu:del capability='usb-host.hostdevice'/>
+	</qemu:capabilities>
+  </domain>
+  ```
+  
+* Just to be sure, edit startup and teardown hooks to unload and reload BT
+	* Edit `/usr/local/bin/vfio-startup` and add this before `## Load VFIO-PCI driver ##`
+	  ```
+	  systemctl disable --now bluetooth
+	  modeprobe -r btusb
+	  ```
+	  
+	* Edit `/usr/local/bin/vfio-teardown` and add this before `echo "$DATE End of Teardown!"`
+	  ```
+	  modeprobe btusb
+	  systemctl enable --now bluetooth
+	  ```
 
 
 ### Final checks
@@ -435,7 +487,7 @@ If you are having problems with the internet access inside the VM where Windows 
 		<feature policy='require' name='topoext'/>  <!-- Required for the AMD CPUs -->
 		<feature policy='require' name='svm'/>
 		<feature policy='require' name='apic'/>         <!-- Enable various features improving behavior of guests running Microsoft Windows -->
-		<feature policy='require' name='hypervisor'/>
+		<feature policy='disable' name='hypervisor'/>
 		<feature policy='require' name='invtsc'/>
 	</cpu>  
 	```
