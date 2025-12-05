@@ -279,7 +279,7 @@ This step is optional, try it if the VM is not starting or shutting down properl
 	echo 0 > $PATH_TO_ROM
 	```
 	
-5) Run `exit` to stop acting as `root`
+  5) Run `exit` to stop acting as `root`
 
   </details>
 
