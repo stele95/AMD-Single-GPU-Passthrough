@@ -115,7 +115,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
   * XML Configs
       
       - <details>
-      	  <summary>Enabling Hyper-V enlightenments (Windows only)</summary>
+        <summary>Enabling Hyper-V enlightenments (Windows only)</summary>
       	  
 		  ```
 		  <hyperv mode='custom'>
@@ -138,7 +138,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
       </details>
 
       - <details>
-		  <summary>KVM features</summary>
+        <summary>KVM features</summary>
 		  
 		  Add this below `</hyperv>` tag
 		  
@@ -153,7 +153,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 	  </details>
 	  
       - <details>
-		  <summary>Passthrough mode and policy</summary>
+        <summary>Passthrough mode and policy</summary>
 
 		  ```
 		  <cpu mode='host-passthrough' check='none' migratable='on'>  <!-- Set the cpu mode to passthrough -->
@@ -167,10 +167,9 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 		  </cpu>                               
 		  ```
 	  </details>
-
       
       - <details>
-		  <summary>Timers</summary>
+        <summary>Timers</summary>
 		  
 		  ```
 		  <clock offset="localtime">
@@ -185,7 +184,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 	  </details>
 
       - <details>
-		  <summary>Additional libvirt attributes</summary>
+        <summary>Additional libvirt attributes</summary>
 
 		  ```
 		  <devices>
@@ -197,7 +196,7 @@ To configure libvirt run the script which configures libvirt and QEMU by typing 
 	  </details>
 
 	  - <details>
-		  <summary>Additional QEMU agrs</summary>
+        <summary>Additional QEMU agrs</summary>
 
 		  You will have to modify virtual machine domain configuration to ``<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>``
 
@@ -244,40 +243,44 @@ If you have that error, add `rtcwake -m mem -s 3` at the end of the `/usr/local/
 This step is optional, try it if the VM is not starting or shutting down properly.
 
 * <details>
-	<summary>If you have Windows installed as dual boot</summary>
-	Extract it from Windows using [GPU-Z](https://www.techpowerup.com/gpuz/), rename it to `gpu.rom` and copy that file to `/var/lib/libvirt/vbios/`.
+  <summary>If you have Windows installed as dual boot</summary>
+  
+  Extract it from Windows using [GPU-Z](https://www.techpowerup.com/gpuz/), rename it to `gpu.rom` and copy that file to `/var/lib/libvirt/vbios/`.
+
   </details>
   
 * <details>
-	<summary>If you don't have Windows installed as dual boot</summary>
-	Go to (VGA bios collection by TechPowerUp)[https://www.techpowerup.com/vgabios/] and find your GPU. This should show all available VBIOS versions.
-	If there are multiple VBIOS versions available, run `cat /sys/class/drm/card*/device/vbios_version` and check which VBIOS matches yours by going into details for all available VBIOS. The VBIOS version matching yours should be inside the `BIOS Internals` section. Download it, rename it to `gpu.rom` and copy that file to `/var/lib/libvirt/vbios/`.
+  <summary>If you don't have Windows installed as dual boot</summary>
+  
+  Go to [VGA bios collection by TechPowerUp](https://www.techpowerup.com/vgabios/) and find your GPU. This should show all available VBIOS versions.
+  If there are multiple VBIOS versions available, run `cat /sys/class/drm/card*/device/vbios_version` and check which VBIOS matches yours by going into details for all available VBIOS. The VBIOS version matching yours should be inside the `BIOS Internals` section. Download it, rename it to `gpu.rom` and copy that file to `/var/lib/libvirt/vbios/`.
+
+  In case you can't find it in the VGA bios collection, you can try these steps:
+  1) Find your GPU's device ID: `lspci -vnn | grep '\[03'`. You should see some output such as the following; the first bit (`09:00.0` in this case) is the device ID.
+
+	```
+	09:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Fiji [Radeon R9 FURY / NANO Series] [1002:7300] (rev cb)
+	```
+
+  2) Run `find /sys/devices -name rom` and ensure the device ID matches. For example looking at the case above, you'll want the last part before the `/rom` to be `09:00.0`, so you might see something like this (the extra `0000:` in front is fine):
+
+	```
+	/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom
+	```
+
+  3) For convenience's sake, let's call this PATH_TO_ROM. You can manually set this variable as well, by first becoming root (run `sudo su`) then running `export PATH_TO_ROM=/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom`
+
+  4) Then, still as `root`, run the following commands:
+
+	```
+	echo 1 > $PATH_TO_ROM
+	mkdir -p /var/lib/libvirt/vbios/
+	cat $PATH_TO_ROM > /var/lib/libvirt/vbios/gpu.rom
+	echo 0 > $PATH_TO_ROM
+	```
 	
-	In case you can't find it in the VGA bios collection, you can try these steps:
-		1) Find your GPU's device ID: `lspci -vnn | grep '\[03'`. You should see some output such as the following; the first bit (`09:00.0` in this case) is the device ID.
+5) Run `exit` to stop acting as `root`
 
-			```
-			09:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Fiji [Radeon R9 FURY / NANO Series] [1002:7300] (rev cb)
-			```
-	
-		2) Run `find /sys/devices -name rom` and ensure the device ID matches. For example looking at the case above, you'll want the last part before the `/rom` to be `09:00.0`, so you might see something like this (the extra `0000:` in front is fine):
-
-			```
-			/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom
-			```
-	
-		3) For convenience's sake, let's call this PATH_TO_ROM. You can manually set this variable as well, by first becoming root (run `sudo su`) then running `export PATH_TO_ROM=/sys/devices/pci0000:00/0000:00:03.1/0000:09:00.0/rom`
-
-		4) Then, still as `root`, run the following commands:
-
-			```
-			echo 1 > $PATH_TO_ROM
-			mkdir -p /var/lib/libvirt/vbios/
-			cat $PATH_TO_ROM > /var/lib/libvirt/vbios/gpu.rom
-			echo 0 > $PATH_TO_ROM
-			```
-			
-		5) Run `exit` to stop acting as `root`
   </details>
 
 
@@ -312,7 +315,7 @@ This step is optional, try it if the VM is not starting or shutting down properl
 
 * Add USB Host devices, like keyboard, mouse... 
 
-* For sound: You can passthrough the PCI HD Audio controller. BUT, be carefull. Ryzen 3000 and above apparently have problems when passing HD Audio Controller and USB controller that's on the same PCI bus as audio controller. For more info, look at [this](https://www.reddit.com/r/VFIO/comments/eba5mh/workaround_patch_for_passing_through_usb_and/?sort=new). If you are having issues with audio controller passthrough, you can set your audio up differently. Use [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_audio_from_virtual_machine_to_host_via_PulseAudio) for `PulseAudio` or [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_audio_from_virtual_machine_to_host_via_JACK_and_PipeWire) for `PipeWire`.
+* For sound: You can pass through the PCI HD Audio controller. BUT, be carefull. Ryzen 3000 and above apparently have problems when passing HD Audio Controller and USB controller that's on the same PCI bus as audio controller. For more info, look at [this](https://www.reddit.com/r/VFIO/comments/eba5mh/workaround_patch_for_passing_through_usb_and/?sort=new). If you are having issues with audio controller passthrough, you can set your audio up differently. Use [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_audio_from_virtual_machine_to_host_via_PulseAudio) for `PulseAudio` or [this](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_audio_from_virtual_machine_to_host_via_JACK_and_PipeWire) for `PipeWire`.
 
 * If Virtual Network Interface is not present (NIC :xx:xx:xx), add it through Add hardware button
     ```
@@ -341,8 +344,8 @@ If you want to make sure that nothing important is attached to the controllers t
 
 #### Integrated BT adapter passthrough
 
-The best way to passthrough a BT adapter is to add the USB Controller, which has the BT adapter attached to it, to the VM as a PCI device. But sometimes that is not possible because the USB controller is in the IOMMU group that is not viable for a passthrough. 
-In that case, for a proper passthrough of an integrated BT adapter (motherboards with integrated WiFi and BT), you can add the BT adapter as a usb device with some additional tweeks to the VM XML.
+The best way to pass through a BT adapter is to add the USB Controller, which has the BT adapter attached to it, to the VM as a PCI device. But sometimes that is not possible because the USB controller is in the IOMMU group that is not viable for a passthrough. 
+In that case, for a proper passthrough of an integrated BT adapter (motherboards with integrated WiFi and BT), you can add the BT adapter as an usb device with some additional tweaks to the VM XML.
 
 * Add additional qemu capabilities after `</devices>`, but before `</domain>`
   ```
